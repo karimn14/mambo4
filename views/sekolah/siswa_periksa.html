@@ -1,0 +1,71 @@
+{{extend 'layout.html'}}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2> Data Siswa</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3" style="font-weight: bold">
+      Nama Siswa
+    </div>
+    <div class="col-md-9">
+      {{=info_siswa[0]['nama']}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3" style="font-weight: bold">
+      Tanggal Lahir
+    </div>
+    <div class="col-md-9">
+      {{=info_siswa[0]['tanggal_lahir']}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3" style="font-weight: bold">
+      Jenis Kelamin
+    </div>
+    <div class="col-md-9">
+      {{=info_siswa[0]['jenis_kelamin']}}
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table">
+      <tr>
+        <th>
+          Tanggal Pemeriksaan
+        </th>
+        <th>
+          Tinggi Badan (cm)
+        </th>
+        <th>
+          Berat Badan (kg)
+        </th>
+      </tr>
+
+{{for d in data:}}
+      <tr>
+        <td>
+          {{=d['tanggal_pengukuran']}}
+        </td>
+        <td>
+          {{=d['tinggi_badan']}}
+        </td>
+        <td>
+          {{=d['berat_badan']}}
+        </td>
+      </tr>
+{{pass}}
+    </table>
+  </div>
+</div>
+
+<script type="text/javascript">
+  var data_periksa={{=data_js}};
+  console.log(data_periksa);
+
+</script>

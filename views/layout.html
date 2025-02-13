@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <!-- www.phpied.com/conditional-comments-block-downloads/ -->
+    <!-- Always force latest IE rendering engine
+         (even in intranet) & Chrome Frame
+         Remove this if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
+    <!--  Mobile Viewport Fix
+          j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
+          device-width: Occupy full width of the screen in its current orientation
+          initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
+          user-scalable = yes allows the user to zoom in -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{=response.title or request.application}}</title>
+    <!-- http://dev.w3.org/html5/markup/meta.name.html -->
+    <meta name="application-name" content="{{=request.application}}">
+    <!-- Speaking of Google, don't forget to set your site up:
+         http://google.com/webmasters -->
+    <meta name="google-site-verification" content="">
+    <!-- include stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="{{=URL('static','css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap4.css')}}"/>
+    <link rel="stylesheet" href="{{=URL('static','css/layout.css')}}"/>
+    <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+    <link href="https://cdn.lineicons.com/5.0/lineicons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- All JavaScript at the bottom, except for Modernizr which enables
+         HTML5 elements & feature detects -->
+    <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
+    <!-- Favicons -->
+    {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
+    {{block head}}{{end}}
+  </head>
+  <body>
+    <!-- Sidebar ======================================= -->
+  
+    <div class="wrapper">
+      <aside id="sidebar">
+        <div class="d-flex">
+          <button class="toggle-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+          </button>
+          <div class="sidebar-logo">
+            <a href="#">Mambo</a>
+          </div>
+        </div>
+
+        
+
+        <ul class="sidebar-nav">
+
+          {{if not auth.user:}}
+          <li class="sidebar-item">
+            <a href="{{=URL('default','index2')}}" class="sidebar-link">
+              <svg style="vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"></path>
+              </svg>
+              <span>Home</span>
+            </a>
+          </li>
+          {{pass}}
+
+          {{for _item in response.menu or []:}}
+          {{if len(_item)<4 or not _item[3]:}}
+          {{if not auth.user:}}
+          <li class="sidebar-item {{if _item[1]:}}active{{pass}}">
+            <a href="{{=_item[2]}}" class="sidebar-link">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-800q-33 0-56.5-23.5T400-880q0-33 23.5-56.5T480-960q33 0 56.5 23.5T560-880q0 33-23.5 56.5T480-800ZM360-200v-480q-60-5-122-15t-118-25l20-80q78 21 166 30.5t174 9.5q86 0 174-9.5T820-800l20 80q-56 15-118 25t-122 15v480h-80v-240h-80v240h-80ZM320 0q-17 0-28.5-11.5T280-40q0-17 11.5-28.5T320-80q17 0 28.5 11.5T360-40q0 17-11.5 28.5T320 0Zm160 0q-17 0-28.5-11.5T440-40q0-17 11.5-28.5T480-80q17 0 28.5 11.5T520-40q0 17-11.5 28.5T480 0Zm160 0q-17 0-28.5-11.5T600-40q0-17 11.5-28.5T640-80q17 0 28.5 11.5T680-40q0 17-11.5 28.5T640 0Z"/></svg>
+              <span>{{=_item[0]}}</span>
+            </a>
+          </li>
+          {{pass}}
+          {{else:}}
+          
+          <li class="sidebar-item">
+            <a href="#{{=_item[0]}}" class="sidebar-link collapsed has-dropdown" data-toggle="collapse" aria-expanded="false" aria-controls="{{=_item[0]}}">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-800q-33 0-56.5-23.5T400-880q0-33 23.5-56.5T480-960q33 0 56.5 23.5T560-880q0 33-23.5 56.5T480-800ZM360-200v-480q-60-5-122-15t-118-25l20-80q78 21 166 30.5t174 9.5q86 0 174-9.5T820-800l20 80q-56 15-118 25t-122 15v480h-80v-240h-80v240h-80ZM320 0q-17 0-28.5-11.5T280-40q0-17 11.5-28.5T320-80q17 0 28.5 11.5T360-40q0 17-11.5 28.5T320 0Zm160 0q-17 0-28.5-11.5T440-40q0-17 11.5-28.5T480-80q17 0 28.5 11.5T520-40q0 17-11.5 28.5T480 0Zm160 0q-17 0-28.5-11.5T600-40q0-17 11.5-28.5T640-80q17 0 28.5 11.5T680-40q0 17-11.5 28.5T640 0Z"/></svg>
+              <span>{{=_item[0]}}</span>
+            </a>
+            <ul id="{{=_item[0]}}" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar" style="width: 00px;">
+              {{for _subitem in _item[3]: }}
+              <li class="sidebar-item">
+                <a href="{{=_subitem[2]}}" class="sidebar-link">{{=_subitem[0]}}</a>
+              </li>
+              {{pass}}
+            </ul>
+
+          </li>
+
+            {{pass}}
+            {{pass}}  
+            
+          {{if 'auth' in globals(): }}
+       
+          <li class="sidebar-item">
+            
+            <a class="sidebar-link collapsed has-dropdown" href="#auth2" data-toggle="collapse" aria-controls="auth2" aria-expanded="false">
+              <svg style= "vertical-align: middle;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>
+              <span>
+                <!-- {{if auth.user:}}{{=auth.user.first_name}}{{else:}}LOGIN{{pass}} -->
+                Account
+              </span>
+            </a>
+          
+            <ul id="auth2" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar" style="width: 00px;">
+              <li class="sidebar-item">
+                {{if auth.user:}}
+                <a class="sidebar-link" href="{{=URL('default','user/profile')}}">{{=T('Profile')}}</a>
+              </li>
+              <li class="sidebar-item">
+                {{if 'change_password' not in auth.settings.actions_disabled:}}
+                <a class="sidebar-link" href="{{=URL('default','user/change_password')}}">{{=T('Change Password')}}</a>
+                {{pass}}                
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="{{=URL('default','user/logout')}}">{{=T('Logout')}}</a>
+                {{else:}}
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="{{=URL('default','user/login')}}">{{=T('Login')}}</a>
+              </li>
+              <li class="sidebar-item">
+                {{if 'register' not in auth.settings.actions_disabled:}}
+                <a class="sidebar-link" href="{{=URL('default','user/register')}}">{{=T('Sign up')}}</a>
+                {{pass}}
+              </li>
+              <li class="sidebar-item">
+                {{if 'retrieve_password' not in auth.settings.actions_disabled:}}
+                <a class="sidebar-link" href="{{=URL('default','user/retrieve_password')}}">{{=T('Lost Password')}}</a>
+                {{pass}}
+              </li>
+              {{pass}}
+        
+          </li>
+            {{pass}}
+          </ul>
+          </ul>
+
+
+          </li>
+          
+          {{if 'auth' in globals(): }}
+          <div class="sidebar-footer">
+            {{if auth.user:}}
+            
+            <a href="#{{=URL('default','user/logout')}}" class="sidebar-link">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+                <span>{{=T('Logout')}}</span>
+            </a>
+            
+            {{pass}}
+            {{pass}}
+        </div>
+      </aside>
+      <div class="main p-3">
+        <div class="text-center">
+            <h1>
+                Mambo V.0.1
+            </h1>
+            
+        </div>
+        <!-- Masthead ===================================== -->
+      {{block header}}
+      {{end}}
+      <!-- Main ========================================= -->
+      <!-- Begin page content -->
+        <div class="container-fluid main-container">
+          {{include}}
+          {{=response.toolbar() if response.show_toolbar else ''}}
+        </div>
+      </div>
+    </div>
+    
+    <div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
+    <!-- Navbar ======================================= -->
+    <!-- <nav class="navbar navbar-light navbar-expand-md bg-faded bg-dark navbar-dark justify-content-center">
+       <a href="http://web2py.com" class="navbar-brand d-flex w-50 mr-auto">web2py</a> 
+       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+       </button>
+       <div class="navbar-collapse collapse w-100" id="navbarNavDropdown">
+         <ul class="navbar-nav w-100 justify-content-center">
+          {{for _item in response.menu or []:}}
+          {{if len(_item)<4 or not _item[3]:}}
+          
+          <li class="nav-item {{if _item[1]:}}active{{pass}}">
+            <a class="nav-link" href="{{=_item[2]}}">{{=_item[0]}}</a>
+          </li>
+          {{else:}}          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="{{=_item[2]}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{=_item[0]}}</a>
+            <div class="dropdown-menu">
+              {{for _subitem in _item[3]:}}
+              <a class="dropdown-item" href="{{=_subitem[2]}}">{{=_subitem[0]}}</a>
+              {{pass}}
+            </div>
+          </li>
+          {{pass}}
+          {{pass}}
+          
+        </ul>
+
+        {{if 'auth' in globals(): }}
+        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{if auth.user:}}{{=auth.user.first_name}}{{else:}}LOGIN{{pass}}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              {{if auth.user:}}
+              <a class="dropdown-item" href="{{=URL('default','user/profile')}}">{{=T('Profile')}}</a>
+              {{if 'change_password' not in auth.settings.actions_disabled:}}
+              <a class="dropdown-item" href="{{=URL('default','user/change_password')}}">{{=T('Change Password')}}</a>
+              {{pass}}
+              <a class="dropdown-item" href="{{=URL('default','user/logout')}}">{{=T('Logout')}}</a>
+              {{else:}}
+              <a class="dropdown-item" href="{{=URL('default','user/login')}}">{{=T('Login')}}</a>
+              {{if 'register' not in auth.settings.actions_disabled:}}
+              <a class="dropdown-item" href="{{=URL('default','user/register')}}">{{=T('Sign up')}}</a>
+              {{pass}}
+              {{if 'retrieve_password' not in auth.settings.actions_disabled:}}
+              <a class="dropdown-item" href="{{=URL('default','user/retrieve_password')}}">{{=T('Lost Password')}}</a>
+              {{pass}}
+              {{pass}}
+            </div>
+          </li>
+        </ul>
+        {{pass}}
+      </div>
+    </nav> -->
+
+    
+
+    <!-- {{block footer}}  this is default footer 
+     <footer class="footer container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
+          <div id="poweredBy" class="pull-right">
+            {{=T('Powered by')}}
+            <a href="http://www.web2py.com/">web2py</a>
+          </div>
+        </div>
+      </div>
+    </footer> 
+    {{end}} -->
+    <!-- The javascript =============================== -->
+    <script src="{{=URL('static','js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{=URL('static','js/web2py-bootstrap4.js')}}"></script>
+    <script src="{{=URL('static','js/layout.js')}}"></script>
+    {{block page_js}}{{end page_js}}
+    {{if response.google_analytics_id:}}
+    <!-- Analytics ==================================== -->
+    <script src="{{=URL('static','js/analytics.min.js')}}"></script>
+    
+    <script type="text/javascript">
+      analytics.initialize({
+      'Google Analytics':{trackingId:'{{=response.google_analytics_id}}'}
+      });
+    </script>
+    {{pass}}
+  </body>
+</html>

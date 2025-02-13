@@ -1,0 +1,61 @@
+{{extend 'layout.html'}}
+
+{{block header}}
+<div class="jumbotron jumbotron-fluid background" style="background-color: #333; color:white; padding:30px;word-wrap:break-word;">
+  <div class="container center">
+    <h1 class="display-5">Mambo v.0.1a</h1>
+  </div>
+</div>
+{{end}}
+
+<div class="row">
+  <div class="col-md-12">
+    <span style="font-size:2em"> Selamat datang di website Mambo </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <span > Silahkan <a href="{{=URL('default','user')}}"> login </a> untuk melanjutkan </span>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div > Test Account yang sudah disiapkan:</div>
+    <table class="table">
+      <tr>
+        <th>email</th>
+        <th>password</th>
+        <th>role</th>
+      </tr>
+      <tr>
+        <td>super_admin@local.test</td>
+        <td>1234</td>
+        <td>Super Admin</td>
+      </tr>
+      <tr>
+        <td>kepala_sekolah@local.test</td>
+        <td>1234</td>
+        <td>Kepala Sekolah</td>
+      </tr>
+      <tr>
+        <td>disdik@local.test</td>
+        <td>1234</td>
+        <td>Admin Dinas Pendidikan</td>
+      </tr>      
+      <tr>
+        <td>supplier1@local.test</td>
+        <td>1234</td>
+        <td>Supplier bahan baku</td>
+      </tr>
+      <tr>
+        <td>vendor1@local.test</td>
+        <td>1234</td>
+        <td>Vendor/Katering</td>
+      </tr>
+    </table>
+  </div>
+</div>
+

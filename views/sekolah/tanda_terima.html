@@ -1,0 +1,67 @@
+{{extend 'layout.html'}}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2> Paket yang dialokasikan untuk {{=nama_sekolah}} </h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table">
+      <tr>
+        <th>
+          Nama Paket
+        </th>
+        <th>
+          Jumlah Pesanan Tercatat
+        </th>
+        <th>
+          Jumlah Pesanan Diterima
+        </th>
+        <th>
+          Jam dan waktu terima
+        </th>
+      </tr>
+      {{for t in paket_saya:}}
+      <tr name="data_paket">
+        <td>
+          {{=t['m_paket']['nama_paket']}}
+        </td>
+        <td>
+          {{=t['t_pemberian_paket']['jumlah']}}
+        </td>
+        <td>
+          <input class="form-control integer" tag="{{=t['t_pemberian_paket']['id']}}" name="jumlah_paket">
+        </td>        
+        <td>
+          <input class="form-control datetime" tag="{{=t['t_pemberian_paket']['id']}}" name="datetime_paket">
+        </td>        
+      </tr>
+      {{pass}}
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      {{=form}}
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+// $("#no_table_js__row").attr("hidden", true)
+
+$(document).find("form").submit(function(e){
+  // e.preventDefault();
+  js_data = [];
+  $(document).find("tr[name=data_paket]").each(function(){
+    let id = $(this).find("input[name=jumlah_paket]").attr("tag");
+    let jumlah = $(this).find("input[name=jumlah_paket]").val();
+    let tanggal_terima = $(this).find("input[name=datetime_paket]").val();
+    js_data.push({id: id, jumlah : jumlah, tanggal_terima:tanggal_terima })
+  });
+  $("#no_table_js__row").find("input[name=js]").val(JSON.stringify(js_data));
+  
+});
+
+</script>

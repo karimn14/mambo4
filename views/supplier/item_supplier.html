@@ -1,0 +1,34 @@
+
+{{extend 'layout.html'}}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2> Data supplier </h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      {{=form}}
+    </div>
+  </div>
+  
+</div>
+
+<script type="text/javascript">
+// $("#no_table_js__row").attr("hidden", true)
+
+$(document).find("form").submit(function(e){
+  // e.preventDefault();
+//   js_data = [];
+//   $(document).find("tr[name=data_paket]").each(function(){
+//     let id = $(this).find("input[name=jumlah_paket]").attr("tag");
+//     let jumlah = $(this).find("input[name=jumlah_paket]").val();
+//     let tanggal_terima = $(this).find("input[name=datetime_paket]").val();
+//     js_data.push({id: id, jumlah : jumlah, tanggal_terima:tanggal_terima })
+//   });
+//   $("#no_table_js__row").find("input[name=js]").val(JSON.stringify(js_data));
+  
+});
+
+</script>

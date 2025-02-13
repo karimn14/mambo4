@@ -1,0 +1,84 @@
+{{extend 'layout.html'}}
+<div>
+  <div class="row">
+    <div class="col-md-12">
+      <h2> Pesanan </h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table">
+      <tr>
+        <th>
+          Pemesan
+        </th>
+        <th>
+            Nama Paket
+        </th>
+        <th>
+            Harga per Paket
+        </th>
+        <th>
+            Kandungan Kalori
+        </th>
+        <th>
+          Jumlah Yang Dipesan
+        </th>
+        <th>
+          Tanggal Pengiriman Yang Diminta
+        </th>
+        <th>
+          Jumlah yang Akan Dikirim
+        </th>
+        <th>
+          Aksi
+        </th>
+      </tr>
+      {{if len(pesanan)==1:}}
+      <tr>
+        <td width="30%">
+          {{=pesanan[0]['m_sekolah']['nama_sekolah']}}
+        </td>
+        <td>
+          {{=pesanan[0]['m_paket']['nama_paket']}}
+        </td>
+        <td>
+            {{=pesanan[0]['m_paket']['pagu_harga']}}
+        </td>
+        <td>
+            {{=pesanan[0]['m_paket']['kalori']}}
+        </td>
+        <td>
+          {{=pesanan[0]['t_pemberian_paket']['jumlah']}}
+        </td>
+        <td>
+          {{=pesanan[0]['t_pemberian_paket']['tanggal_pengiriman']}}
+        </td>
+        <td>
+          <input id="jumlah_dari_vendor" type="text" class="form-control">
+        </td>
+        <td>
+          <button id="kirim" onclick="kirim({{=pesanan[0]['t_pemberian_paket']['id']}})">Kirim Sekarang</button>
+        </td>        
+      </tr>
+      {{pass}}
+    </table>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+  function kirim(id){
+  $.ajax({
+          url: "{{=URL('vendor','kirim_sekarang.json')}}",
+          dataType:"json",
+          data: {id:id, 
+              jumlah:$("#jumlah_dari_vendor").val()},
+          type:"POST",
+          success: function(retval){
+            window.location = "{{=(URL('vendor','pesanan')) }}";
+          }
+    });
+}
+
+</script>

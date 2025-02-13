@@ -1,0 +1,129 @@
+{{extend 'layout.html'}}
+<div class="container container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      Pesanan:    
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table">
+      <tr>
+        <th>
+          Pemesan
+        </th>
+        <th>
+            Nama Paket
+        </th>
+        <th>
+          Jumlah Pesanan
+        </th>
+      </tr>
+      <tr>
+        <td>
+          {{=pesanan['m_sekolah']['nama_sekolah']}}
+        </td>
+        <td>
+          {{=pesanan['m_paket']['nama_paket']}}
+        </td>
+        <td>
+          {{=pesanan['t_pengajuan_paket']['jumlah']}}
+        </td>        
+      </tr>
+    </table>
+  </div>
+
+  <div class="row" style="padding-bottom:10px">
+    <div class="col-md-3">
+      Nama Bahan
+    </div>
+    <div class="col-md-2">
+      Jumlah
+    </div>
+
+    <div class="col-md-2">
+      Satuan
+    </div>
+
+    <div class="col-md-2">
+      Supplier
+    </div>
+
+    <div class="col-md-2">
+      Harga Satuan
+    </div>
+  </div>
+  <div id="pembelian">
+  </div>
+
+  <div id = 'template_row'>
+  <div class="row" style="padding-top: 5px;">
+    <div class="col-md-3" name="1">
+      <select class="form-control" name="item_jualan">
+        {{for i in list:}}
+        <option value = "{{=i['t_harga_supplier']['id']}}"> {{=i['t_harga_supplier']['nama_item']}} </option>
+        {{pass}}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input class="form-control integer" name="jumlah">
+    </div>
+
+    <div class="col-md-2" name="s_satuan">
+      <span name="satuan"></span>
+    </div>
+
+    <div class="col-md-2">
+      <select class="form-control" name="supplier">
+        {{for i in supplier_list:}}
+        <option value = "{{=i['id']}}"> {{=i['nama_supplier']}} </option>
+        {{pass}}
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <span name="harga"></span>
+    </div>
+  </div>
+</div>
+
+  <div id="end">
+    <div class="row" style="padding-top: 10px;">
+      <div class ="col-md-8">
+      </div>
+      <div class ="col-md-2">
+        <button id="tambah" class="btn btn-default">Tambah item</button>
+      </div>
+      <div class ="col-md-2">
+        <button id="simpan" class="btn btn-default">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+var template = $("#template_row").html();
+var no_item = 0;
+var list_item = {{=XML(supplier_list)}}
+console.log(list_item);
+
+$("#tambah").on("click", function(){
+  let old = $("#pembelian").html();
+  $("#pembelian").html(old+template);
+});
+
+
+$("select[name=supplier]").on("change", function(){
+  console.log(no_item);
+})
+
+$("select[name=item_jualan]").on("change", function(){
+  console.log("bsd")
+  console.log($(this).parent().attr('id'));
+  $(this).parent().find("div[name=s_satuan]").each(function(){
+    console.log("asd")
+  })
+})
+$.ajax()
+</script>
