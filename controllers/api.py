@@ -310,7 +310,6 @@ def periksa_siswa():
         
         db(db.t_periksa_siswa.id == request.vars.id).delete()
         return dict(res='ok', id_deleted=request.vars.id)
-        jj
     return locals()
 
 #------------------------------------------------------------------------------------
