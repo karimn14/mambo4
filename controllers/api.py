@@ -449,6 +449,7 @@ def vendor_orderku_total():
 @request.restful()
 @cors_allow
 def vendor_paket():
+    response.view = 'generic.json'
     def GET(*args, **vars):
         response.view = 'generic.json'
         if not request.vars.id_user:
@@ -467,6 +468,21 @@ def vendor_paket():
             n.pop('deleted')
         return dict(daftar=q)
     
+    def POST(*args, **vars):
+        required_vars = ['id_user', 'nama_paket', 'pagu_harga', 'kalori']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+        if not db(db.m_paket.nama_paket == request.vars.nama_paket).select().first():
+            db.m_paket.insert(id_vendor=id_vendor, nama_paket=request.vars.nama_paket, 
+                              pagu_harga=request.vars.pagu_harga, kalori=request.vars.kalori)
+        else:
+            return dict(error="Product already exists")
+
+        return dict(res='ok')
+
     return locals()
 
 #Fungsi di hold dulu
