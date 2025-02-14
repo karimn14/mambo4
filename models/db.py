@@ -199,6 +199,7 @@ db.define_table('m_kodepos',
     )
 
 db.define_table('m_paket', 
+    Field('id_vendor', 'integer'),
     Field('nama_paket', 'string'),
     Field('pagu_harga', 'integer'),
     Field('kalori', 'float'),

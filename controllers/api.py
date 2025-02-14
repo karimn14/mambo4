@@ -294,8 +294,6 @@ def periksa_siswa():
         id_record_updated = db_now.t_periksa_siswa.id
         return dict(res='ok', id_update=id_record_updated)
 
-    from gluon import current, HTTP
-
     def DELETE(*args, **vars):
         required_vars = ['id_user', 'id']
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
@@ -450,8 +448,26 @@ def vendor_orderku_total():
 #Tambah Produk Vendor
 @request.restful()
 @cors_allow
-def vendor_tambah_produk():
-    return dict(res='res')
+def vendor_produk():
+    def GET(*args, **vars):
+        response.view = 'generic.json'
+        if not request.vars.id_user:
+            return dict(error="id_user is required")
+        try:
+            t_id = int(request.vars.id_user)
+        except ValueError:
+            return dict(error="Invalid id format")
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+        q = db((db.m_paket.id_vendor == id_vendor) & 
+               (db.m_paket.id_satuan_vendor == db.m_satuan_vendor.id)).select().as_list()
+        #sanitizing response:
+        for n in q:
+            n['m_paket'].pop('time_stamp')
+            n['m_paket'].pop('deleted')
+        return dict(daftar=q)
+    
+    return locals()
 
 #Fungsi di hold dulu
 # @request.restful()
