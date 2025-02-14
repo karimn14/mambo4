@@ -2767,3 +2767,24 @@ success!
 success!
 success!
 success!
+success!
+timestamp: 2025-02-14T07:55:10.407231
+ALTER TABLE "m_paket" ADD "id_vendor" INTEGER;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

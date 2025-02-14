@@ -448,7 +448,7 @@ def vendor_orderku_total():
 #Tambah Produk Vendor
 @request.restful()
 @cors_allow
-def vendor_produk():
+def vendor_paket():
     def GET(*args, **vars):
         response.view = 'generic.json'
         if not request.vars.id_user:
@@ -459,12 +459,12 @@ def vendor_produk():
             return dict(error="Invalid id format")
         
         id_vendor = get_vendor_id(request.vars.id_user)
-        q = db((db.m_paket.id_vendor == id_vendor) & 
-               (db.m_paket.id_satuan_vendor == db.m_satuan_vendor.id)).select().as_list()
+       
+        q = db(db.m_paket.id_vendor == id_vendor).select().as_list()
         #sanitizing response:
         for n in q:
-            n['m_paket'].pop('time_stamp')
-            n['m_paket'].pop('deleted')
+            n.pop('time_stamp')
+            n.pop('deleted')
         return dict(daftar=q)
     
     return locals()
