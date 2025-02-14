@@ -483,6 +483,37 @@ def vendor_paket():
 
         return dict(res='ok')
 
+    def PUT(*args, **vars):
+        required_vars = ['id_user', 'id_paket', 'nama_paket', 'pagu_harga', 'kalori']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+        db_now = db((db.m_paket.id == request.vars.id_paket) & (db.m_paket.id_vendor == id_vendor))
+        
+        if not db_now.select().first():
+            return dict(error="Product not found")
+        
+        db_now.update(nama_paket=request.vars.nama_paket, pagu_harga=request.vars.pagu_harga, 
+                      kalori=request.vars.kalori)
+        id_record_updated = db_now.select().first().id
+        return dict(res='ok', id_update=id_record_updated)
+
+    def DELETE(*args, **vars):
+        required_vars = ['id_user', 'id_paket']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+        db_now = db((db.m_paket.id == request.vars.id_paket) & (db.m_paket.id_vendor == id_vendor))
+        
+        if not db_now.select().first():
+            return dict(error="Product not found")
+        
+        db_now.delete()
+        return dict(res='ok', id_deleted=request.vars.id_paket)
     return locals()
 
 #Fungsi di hold dulu
