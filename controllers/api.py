@@ -22,6 +22,89 @@ def api_login():
 #------------------------------------------------------------------------------------
 ## untuk disdik
 #------------------------------------------------------------------------------------
+#Added: Arga 15-02-2025
+def f_cek_id_disdik(t_id):
+    disdik_saya = []
+    id_disdik=None
+    nama_disdik = 'Disdik Debug'
+
+    if t_id!=None:
+        disdik_saya = db((db.map_admin_disdik.id_admin == db.auth_user.id) & 
+            (db.map_admin_disdik.id_disdik==db.m_disdik.id)& 
+            (db.auth_user.id == t_id)).select().as_list()
+    else:
+       id_user=dict(id=3, first_name='Disdik', last_name='Regional') 
+
+
+    if len(disdik_saya)==1:
+        id_disdik = disdik_saya[0]['m_disdik']['id']
+        nama_disdik = disdik_saya[0]['m_disdik']['nama_disdik']
+        id_kelurahan_desa=disdik_saya[0]['m_disdik']['id_kelurahan_desa']
+        id_kode_pos=disdik_saya[0]['m_disdik']['id_kode_pos']
+        id_user=dict(id=disdik_saya[0]['auth_user']['id'], first_name=disdik_saya[0]['auth_user']['first_name'], 
+            last_name=disdik_saya[0]['auth_user']['last_name'])        
+    else:
+        id_disdik=1
+        nama_disdik = 'Disdik Debug'
+        id_kelurahan_desa=0
+        id_kode_pos=0
+        id_user=dict(id=3, first_name='Disdik', last_name='Regional') 
+    return dict(id_disdik=id_disdik, nama_disdik=nama_disdik, id_kelurahan_desa =id_kelurahan_desa, 
+        id_kode_pos=id_kode_pos, user=id_user)
+
+##### Untuk ke web:
+#Added: Arga 15-02-2025
+@request.restful()
+@cors_allow
+def data_penerimaan_paket_dari_kepsek():
+
+    response.view = 'generic.json'
+    def GET(*args, **vars):
+        if request.vars.id_user==None:
+            raise HTTP(400)
+        profil = f_cek_id_disdik(request.vars.id_user)
+        #cari sekolahan dibawah disdik saya:
+        list_sekolah = db(db.map_disdik_sekolah.id_disdik==profil['id_disdik']).select().as_list()
+        
+        paket_sekolah_sekolah=[]
+        print("-------------------------------------------")
+        for l in list_sekolah:
+            ps = db(
+                (db.t_pemberian_paket.id_paket == db.m_paket.id) &
+                (db.t_pemberian_paket.id_tujuan == l['id_sekolah']) &
+                (db.t_pemberian_paket.id == db.t_tanda_terima_paket.id_t_pemberian_paket) &
+                #(db.t_pemberian_paket.tanggal_pengiriman_dari_vendor != None) &
+                (db.t_pemberian_paket.deleted == False)
+                ).select().as_list()
+            for p in ps:
+                #sanitizing response:
+                p['t_pemberian_paket'].pop('time_stamp')
+                p['t_pemberian_paket'].pop('id_vendor')
+                p['t_pemberian_paket'].pop('id_paket')
+                p['t_pemberian_paket'].pop('deleted')
+                p['t_tanda_terima_paket'].pop('time_stamp')
+                p['t_tanda_terima_paket'].pop('deleted')
+                p['m_paket'].pop('time_stamp')
+                p['m_paket'].pop('deleted')
+
+
+            sek = db(db.m_sekolah.id==l['id_sekolah']).select().as_list()
+            if len(sek)==1:
+                kep=dict(first_name=None, last_name=None)
+                kepsek = db((db.map_sekolah_kepala.id_sekolah == l['id_sekolah'])&
+                    (db.map_sekolah_kepala.id_kepala_sekolah == db.auth_user.id)
+                    ).select().as_list()
+                if len(kepsek)==1:
+                    kep['first_name']=kepsek[0]['auth_user']['first_name']
+                    kep['last_name']=kepsek[0]['auth_user']['last_name']
+                #sanitizing response:
+                sek[0].pop('time_stamp')
+                sek[0].pop('deleted')
+                rr = dict(sekolah = sek[0], paket=ps, kepala_sekolah = kep)
+
+                paket_sekolah_sekolah.append(rr)
+        return dict(test = paket_sekolah_sekolah)
+    return locals()    
 
 #disdik auth_user.id_user=3
 def get_disdik_id(t_id=None):
