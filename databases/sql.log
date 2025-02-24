@@ -2842,3 +2842,84 @@ success!
 success!
 success!
 success!
+success!
+success!
+timestamp: 2025-02-24T10:38:35.456589
+CREATE TABLE "t_pembelian_bahan"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_supplier" CHAR(512),
+    "id_vendor" CHAR(512),
+    "nama_vendor" CHAR(512),
+    "nama_item" CHAR(512),
+    "volume" INTEGER,
+    "harga" INTEGER,
+    "id_satuan_supplier" CHAR(512),
+    "time_stamp" TIMESTAMP,
+    "sudah_diterima" CHAR(1),
+    "deleted" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

@@ -343,6 +343,19 @@ db.define_table('t_harga_supplier',
     Field('deleted', 'boolean', default=False)
     )
 
+db.define_table('t_pembelian_bahan',
+    Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id,'%(nama_supplier)s' )),
+    Field('id_vendor', reference = IS_IN_DB(db, db.map_vendor_user.id,'%(id_vendor)s' )),
+    Field('nama_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
+    Field('nama_item', 'string'),
+    Field('volume', 'integer'),
+    Field('harga', 'integer', reference = IS_IN_DB(db, db.t_harga_supplier.id,'%(harga)s' )),
+    Field('id_satuan_supplier', reference = IS_IN_DB(db, db.m_satuan_supplier.id,'%(nama_satuan)s' )),
+    Field('time_stamp', 'datetime', default = request.now),
+    Field('sudah_diterima', 'boolean', default=False),
+    Field('deleted', 'boolean', default=False)
+)
+
 # db.define_table('t_paket_menu',
 #     Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_sekolah)s' )),
 #     Field('menu', 'string'),

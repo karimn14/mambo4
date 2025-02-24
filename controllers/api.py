@@ -1,56 +1,56 @@
 import sys
 sys.path.append(r"C:\Users\Windows 10\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages")
 
-import jwt
-from datetime import datetime, timedelta, timezone
-from passlib.context import CryptContext
-from pydantic import BaseModel
+# import jwt
+# from datetime import datetime, timedelta, timezone
+# from passlib.context import CryptContext
+# from pydantic import BaseModel
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+# ALGORITHM = "HS256"
+# ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+# class Token(BaseModel):
+#     access_token: str
+#     token_type: str
 
-class TokenData(BaseModel):
-    username: str | None = None
+# class TokenData(BaseModel):
+#     username: str | None = None
 
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+# class User(BaseModel):
+#     username: str
+#     email: str | None = None
+#     full_name: str | None = None
+#     disabled: bool | None = None
 
-class UserInDB(User):
-    hashed_password: str
+# class UserInDB(User):
+#     hashed_password: str
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+# def verify_password(plain_password, hashed_password):
+#     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+# def get_password_hash(password):
+#     return pwd_context.hash(password)
 
-def authenticate_user(email: str, password: str):
-    user = db(db.auth_user.email == email).select().first()
-    if not user:
-        return False
-    if not verify_password(password, user.password):
-        return dict(res="Incorrect Password")
-    return user
+# def authenticate_user(email: str, password: str):
+#     user = db(db.auth_user.email == email).select().first()
+#     if not user:
+#         return False
+#     if not verify_password(password, user.password):
+#         return dict(res="Incorrect Password")
+#     return user
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+# def create_access_token(data: dict, expires_delta: timedelta | None = None):
+#     to_encode = data.copy()
+#     if expires_delta:
+#         expire = datetime.now(timezone.utc) + expires_delta
+#     else:
+#         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+#     to_encode.update({"exp": expire})
+#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+#     return encoded_jwt
 
 @request.restful()
 @cors_allow
@@ -670,23 +670,92 @@ def vendor_paket():
         return dict(res='ok', id_deleted=request.vars.id_paket)
     return locals()
 
-#Fungsi di hold dulu
-# @request.restful()
-# @cors_allow
-# def vendor_beli_ke_supplier():
-#     response.view = 'generic.json'
-#     def GET(*args, **vars):   
-#         # Langsung ambil data vendor dari database, bukan dari API cek_vendor
-#         supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
-#                          (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
-#                          (db.auth_user.id == t_id)).select().first()
-#         if not supplier_data:
-#             return dict(error="Supplier not found")
-#         id_supplier = supplier_data.m_supplier.id
-#         #cari alamat:
-#         item_supplier = db((db.t_harga_supplier.id_supplier==id_supplier)).select().first()
-#         return dict(stok=item_supplier)
-#     return locals()
+@request.restful()
+@cors_allow
+def vendor_pesan_supplier():
+    response.view = 'generic.json'
+
+    def GET(*args, **vars):   
+        if not request.vars.id_user:
+            raise HTTP(400, "Missing id_user")
+        # Langsung ambil data vendor dari database, bukan dari API cek_vendor
+        supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
+                         (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
+                         (db.auth_user.id == request.vars.id_user)).select().first()
+        if not supplier_data:
+            return dict(error="Supplier not found")
+        id_supplier = supplier_data.m_supplier.id
+        #cari alamat:
+        pesanan_supplier = db((db.t_pembelian_bahan.id_supplier==id_supplier)).select().first()
+        return dict(stok=pesanan_supplier)
+
+    def POST(*args, **vars):
+        required_vars = ['id_user', 'id_supplier', 'nama_item', 'volume']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
+                    (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
+                    (db.auth_user.id == request.vars.id_user)).select().first()
+
+        if not vendor_data:
+            return dict(error="Vendor not found")
+
+        nama_vendor = vendor_data.m_vendor.nama_vendor
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+
+        item = db((db.t_harga_supplier.nama_item == request.vars.nama_item)).select().first()
+        harga_item = item.harga
+        satuan_item = db((db.m_satuan_supplier.id == item.id_satuan_supplier)).select().first().nama_satuan
+        id_satuan_supplier = item.id_satuan_supplier
+
+        db.t_pembelian_bahan.insert(id_vendor=id_vendor, id_supplier=request.vars.id_supplier, 
+                                    nama_vendor = nama_vendor, harga = harga_item, id_satuan_supplier = id_satuan_supplier,
+                                    nama_item = request.vars.nama_item, volume=request.vars.volume)
+        return dict(res='ok')
+    
+    def PUT(*args, **vars):
+        required_vars = ['id_user', 'id_supplier', 'id_item', 'volume', 'nama_item', 'sudah_diterima']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
+                    (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
+                    (db.auth_user.id == request.vars.id_user)).select().first()
+
+        if not vendor_data:
+            return dict(error="Vendor not found")
+
+        id_vendor = get_vendor_id(request.vars.id_user)
+        db((db.t_pembelian_bahan.id == request.vars.id_item) & 
+           (db.t_pembelian_bahan.id_vendor == id_vendor)).update(
+                                volume=request.vars.volume, 
+                                nama_item=request.vars.nama_item,
+                                sudah_diterima = request.vars.sudah_diterima)  
+        return dict(res='ok')
+
+    def DELETE(*args, **vars):
+        required_vars = ['id_user', 'id_item']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
+                    (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
+                    (db.auth_user.id == request.vars.id_user)).select().first()
+
+        if not vendor_data:
+            return dict(error="Vendor not found")
+
+        id_vendor = get_vendor_id(request.vars.id_user)
+        db((db.t_pembelian_bahan.id == request.vars.id_item) & 
+           (db.t_pembelian_bahan.id_vendor == id_vendor)).update(deleted = True)
+        return dict(res='ok')
+
+    return locals()
     
 
 #------------------------------------------------------------------------------------
