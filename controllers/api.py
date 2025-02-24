@@ -1,6 +1,10 @@
+import sys
+sys.path.append(r"C:\Users\Windows 10\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages")
+
 import jwt
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
+from pydantic import BaseModel
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
