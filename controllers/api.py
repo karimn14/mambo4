@@ -899,3 +899,34 @@ def tambah_item_baru_supplier():
         return dict(res='ok')
 
     return locals()
+
+
+#------------------------------------------------------------------------------------
+## untuk Watchdog
+#------------------------------------------------------------------------------------
+
+@request.restful()
+@cors_allow
+def keluhan_user():
+    response.view = 'generic.json'
+
+    #GET ALL Response
+    def GET(*args, **vars):
+        
+        keluhan = db(db.t_keluhan_user).select().as_list()
+        return dict(res=keluhan)
+
+    def POST(*args, **vars):
+        if not (request.vars.keluhan):
+            raise HTTP(400, "Missing required parameters")
+
+        db.t_keluhan_user.insert(id_user=request.vars.id_user, keluhan=request.vars.keluhan)
+        return dict(res='ok')    
+    
+    def DELETE(*args, **vars):
+        if not request.vars.id_keluhan:
+            raise HTTP(400, "Missing required parameters")
+
+        db(db.t_keluhan_user.id == request.vars.id_keluhan).update(deleted=True)
+        return dict(res='ok') 
+    return locals()

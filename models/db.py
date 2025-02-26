@@ -409,6 +409,14 @@ db.define_table('t_laporan_masyarakat',
     Field('time_stamp', 'datetime', default = request.now),
     )
 
+
+# Watchdog DB
+db.define_table('t_keluhan_user', 
+                Field('keluhan', 'text'),
+                Field('time_stamp', 'datetime', default = request.now),
+                Field('deleted', 'boolean', default=False)
+                )
+
 # def get_alamat_by_kode_pos(kodepos):
 #     ret ={}
 #     alam=db((db.m_propinsi.id==db.m_kabupaten_kota.id_propinsi) & 

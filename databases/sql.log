@@ -2923,3 +2923,38 @@ success!
 success!
 success!
 success!
+success!
+success!
+timestamp: 2025-02-26T14:00:32.637544
+CREATE TABLE "t_keluhan_user"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_user" CHAR(512),
+    "keluhan" TEXT,
+    "time_stamp" TIMESTAMP,
+    "deleted" CHAR(1)
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
