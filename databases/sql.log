@@ -2958,3 +2958,64 @@ success!
 success!
 success!
 success!
+success!
+success!
+success!
+timestamp: 2025-02-28T10:30:25.429109
+CREATE TABLE "t_kontrak_disdik"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_disdik" INTEGER REFERENCES "m_disdik" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "id_vendor" INTEGER REFERENCES "m_vendor" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "nama" CHAR(512),
+    "nip_npwp" CHAR(512),
+    "jabatan" CHAR(512),
+    "alamat" CHAR(512),
+    "instansi" CHAR(512),
+    "jenis_paket" CHAR(512),
+    "jumlah_kalori" DOUBLE,
+    "jumlah_paket_per_hari" INTEGER,
+    "tanggal_mulai" DATE,
+    "tanggal_selesai" DATE,
+    "durasi" INTEGER,
+    "total_biaya_kontrak" INTEGER,
+    "deleted" CHAR(1)
+);
+success!
+success!
+success!
+success!
+timestamp: 2025-02-28T10:58:45.482866
+ALTER TABLE "t_kontrak_disdik" ADD "bukti_kontrak" CHAR(512);
+timestamp: 2025-02-28T10:58:45.574889
+ALTER TABLE "t_kontrak_disdik" ADD "time_stamp" TIMESTAMP;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

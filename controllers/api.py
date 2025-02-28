@@ -204,6 +204,53 @@ def disdik_menu():
         return dict(menus=menus)
     return locals()
 
+
+@request.restful()
+@cors_allow
+def disdik_kontrak():
+
+    response.view = 'generic.json'
+
+    def GET(*args, **vars):
+
+        db_now = db.t_kontrak_disdik.select().as_list()
+        return dict(kontrak=db_now)
+
+    def POST(*args, **vars):
+        required_vars = ['id_user', 'id_vendor', 'nama', 'nip_npwp', 'jabatan', 
+                         'alamat', 'instansi', 'jenis_paket', 'jumlah_kalori', 
+                         'jumlah_paket_per_hari', 'tanggal_mulai', 'tanggal_selesai', 
+                         'total_biaya_kontrak', 'bukti_kontrak']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        id_disdik = get_disdik_id(request.vars.id_user)
+
+        db.t_kontrak_disdik.insert(
+            id_disdik= id_disdik,
+            id_vendor=request.vars.id_vendor,
+            nama=request.vars.nama,
+            nip_npwp=request.vars.nip_npwp,
+            jabatan=request.vars.jabatan,
+            alamat=request.vars.alamat,
+            instansi=request.vars.instansi,
+            jenis_paket=request.vars.jenis_paket,
+            jumlah_kalori=request.vars.jumlah_kalori,
+            jumlah_paket_per_hari=request.vars.jumlah_paket_per_hari,
+            tanggal_mulai=request.vars.tanggal_mulai,
+            tanggal_selesai=request.vars.tanggal_selesai,
+            durasi=(request.vars.tanggal_selesai - request.vars.tanggal_mulai).days 
+               if request.vars.tanggal_mulai and request.vars.tanggal_selesai else None,
+            total_biaya_kontrak=request.vars.total_biaya_kontrak,
+            bukti_kontrak=request.vars.bukti_kontrak
+        )
+        # return dict(res='ok')
+    
+
+    
+    return locals()
+
 #------------------------------------------------------------------------------------
 ## untuk kepsek
 #------------------------------------------------------------------------------------
@@ -684,7 +731,9 @@ def vendor_pesan_supplier():
                          (db.auth_user.id == request.vars.id_user)).select().first()
         if not supplier_data:
             return dict(error="Supplier not found")
+        
         id_supplier = supplier_data.m_supplier.id
+        
         #cari alamat:
         pesanan_supplier = db((db.t_pembelian_bahan.id_supplier==id_supplier)).select().first()
         return dict(stok=pesanan_supplier)
@@ -797,22 +846,24 @@ def stok_item_supplier():
     
     response.view = 'generic.json'
     def GET(*args, **vars):
-        if not request.vars.id_user:
-            raise HTTP(400, "Missing id_user")
         
         t_id = request.vars.id_user
         #Langsung ambil data vendor dari database, bukan dari API cek_vendor
-        supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
+        if t_id:
+            supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
                          (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
                          (db.auth_user.id == t_id)).select().first()
-        if not supplier_data:
-            return dict(error="Supplier not found")
-        
-        id_supplier = supplier_data.m_supplier.id
+            if not supplier_data:
+                return dict(error="Supplier not found")
 
-        q = db( (db.t_harga_supplier.id_supplier == id_supplier)&
-                (db.t_harga_supplier.id_satuan_supplier == db.m_satuan_supplier.id)        
-                ).select().as_list()
+            id_supplier = supplier_data.m_supplier.id
+
+            q = db( (db.t_harga_supplier.id_supplier == id_supplier)&
+                    (db.t_harga_supplier.id_satuan_supplier == db.m_satuan_supplier.id)        
+                    ).select().as_list()
+        else:
+            q = db.t_harga_supplier.select().as_list()
+        
         #sanitizing response:    
         for w in q:
             w['t_harga_supplier'].pop('time_stamp')
@@ -821,7 +872,7 @@ def stok_item_supplier():
             w['t_harga_supplier'].pop('id_satuan_supplier')
             w.pop('m_satuan_supplier')
 
-        return dict(daftar=q, nama_supplier=supplier_data.m_supplier.nama_supplier)
+        return dict(daftar=q)
 
     return locals()    
 
@@ -912,7 +963,6 @@ def keluhan_user():
 
     #GET ALL Response
     def GET(*args, **vars):
-        
         keluhan = db(db.t_keluhan_user).select().as_list()
         return dict(res=keluhan)
 
@@ -922,7 +972,7 @@ def keluhan_user():
 
         db.t_keluhan_user.insert(id_user=request.vars.id_user, keluhan=request.vars.keluhan)
         return dict(res='ok')    
-    
+
     def DELETE(*args, **vars):
         if not request.vars.id_keluhan:
             raise HTTP(400, "Missing required parameters")

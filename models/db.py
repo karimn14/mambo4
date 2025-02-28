@@ -417,6 +417,41 @@ db.define_table('t_keluhan_user',
                 Field('deleted', 'boolean', default=False)
                 )
 
+
+#------------------------------------------------------------------------------------
+## khusus disdik
+#------------------------------------------------------------------------------------
+import datetime
+
+db.define_table('t_kontrak_disdik',
+    Field('id_disdik', 'reference m_disdik', 
+          requires= IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s')),
+    Field('id_vendor', 'reference m_vendor', 
+          requires= IS_IN_DB(db, db.m_vendor.id, '%(nama_vendor)s')),
+    Field('nama', 'string'),
+    Field('nip_npwp', 'string'),
+    Field('jabatan', 'string'),
+    Field('alamat', 'string'),
+    Field('instansi', 'string'),
+    Field('jenis_paket', 'string'),
+    Field('jumlah_kalori', 'float'),
+    Field('jumlah_paket_per_hari', 'integer'),
+    Field('tanggal_mulai', 'date'),
+    Field('tanggal_selesai', 'date'),
+    Field('durasi', 'integer',
+          compute=lambda row: (row.tanggal_selesai - row.tanggal_mulai).days 
+                              if row.tanggal_mulai and row.tanggal_selesai else None,
+          writable=False, readable=True,
+          label="Durasi Kontrak (hari)"),
+    Field('total_biaya_kontrak', 'integer'),
+    Field('bukti_kontrak', 'upload'),
+    Field('time_stamp', 'datetime', default = request.now),
+    Field('deleted', 'boolean', default=False)
+)
+
+
+
+
 # def get_alamat_by_kode_pos(kodepos):
 #     ret ={}
 #     alam=db((db.m_propinsi.id==db.m_kabupaten_kota.id_propinsi) & 
