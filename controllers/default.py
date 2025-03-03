@@ -126,3 +126,5 @@ def debug_t():
     a = dict(aa='cc')
     return dict(res='ok')
     
+def download():
+    return response.download(request, db)

@@ -180,8 +180,8 @@ def data_penerimaan_paket_dari_kepsek():
 #disdik auth_user.id_user=3
 def get_disdik_id(t_id=None):
     # Fetch disdik data
-    disdik_data = db((db.map_disdik_user.id_user == db.auth_user.id) & 
-                     (db.map_disdik_user.id_disdik == db.m_disdik.id) & 
+    disdik_data = db((db.map_admin_disdik.id_admin == db.auth_user.id) & 
+                     (db.map_admin_disdik.id_disdik == db.m_disdik.id) & 
                      (db.auth_user.id == t_id)).select().first()
     
     if not disdik_data:
@@ -213,39 +213,65 @@ def disdik_kontrak():
 
     def GET(*args, **vars):
 
-        db_now = db.t_kontrak_disdik.select().as_list()
+        db_now = db(db.t_kontrak_disdik).select().as_list()
         return dict(kontrak=db_now)
 
     def POST(*args, **vars):
         required_vars = ['id_user', 'id_vendor', 'nama', 'nip_npwp', 'jabatan', 
-                         'alamat', 'instansi', 'jenis_paket', 'jumlah_kalori', 
+                         'alamat_vendor', 'instansi', 'jenis_paket', 'jumlah_kalori', 
                          'jumlah_paket_per_hari', 'tanggal_mulai', 'tanggal_selesai', 
                          'total_biaya_kontrak', 'bukti_kontrak']
-        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        missing_vars = []
+        for var in required_vars:
+            if var == 'bukti_kontrak':
+                value = request.vars.get(var)
+                # Instead of using "if not value", check explicitly for None and filename
+                if value is None:
+                    missing_vars.append(var)
+                elif not hasattr(value, 'filename'):
+                    missing_vars.append(var)
+                else:
+                    filename = value.filename
+                    if filename is None or filename.strip() == "":
+                        missing_vars.append(var)
+            else:
+                value = request.vars.get(var)
+                if value is None or (isinstance(value, str) and value.strip() == ''):
+                    missing_vars.append(var)
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
 
         id_disdik = get_disdik_id(request.vars.id_user)
 
+        # Convert date strings to date objects.
+        from datetime import datetime
+        try:
+            tanggal_mulai = datetime.strptime(request.vars.tanggal_mulai, '%Y-%m-%d').date()
+            tanggal_selesai = datetime.strptime(request.vars.tanggal_selesai, '%Y-%m-%d').date()
+        except Exception as e:
+            raise HTTP(400, f"Invalid date format: {e}")
+
+        # Calculate duration (durasi) in days.
+        durasi = (tanggal_selesai - tanggal_mulai).days if tanggal_mulai and tanggal_selesai else None
+
         db.t_kontrak_disdik.insert(
-            id_disdik= id_disdik,
+            id_disdik=id_disdik,
             id_vendor=request.vars.id_vendor,
             nama=request.vars.nama,
             nip_npwp=request.vars.nip_npwp,
             jabatan=request.vars.jabatan,
-            alamat=request.vars.alamat,
+            alamat=request.vars.alamat_vendor,
             instansi=request.vars.instansi,
             jenis_paket=request.vars.jenis_paket,
             jumlah_kalori=request.vars.jumlah_kalori,
             jumlah_paket_per_hari=request.vars.jumlah_paket_per_hari,
-            tanggal_mulai=request.vars.tanggal_mulai,
-            tanggal_selesai=request.vars.tanggal_selesai,
-            durasi=(request.vars.tanggal_selesai - request.vars.tanggal_mulai).days 
-               if request.vars.tanggal_mulai and request.vars.tanggal_selesai else None,
+            tanggal_mulai=tanggal_mulai,
+            tanggal_selesai=tanggal_selesai,
+            durasi=durasi,
             total_biaya_kontrak=request.vars.total_biaya_kontrak,
             bukti_kontrak=request.vars.bukti_kontrak
         )
-        # return dict(res='ok')
+        return dict(res='ok')
     
 
     
