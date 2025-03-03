@@ -479,20 +479,19 @@ def periksa_siswa():
         return dict(res='ok', id_record = id_record)
 
     def PUT(*args, **vars):
-        required_vars = ['id_user', 'id', 'berat_badan', 'tinggi_badan', 'tanggal_pengukuran']
+        required_vars = ['id', 'berat_badan', 'tinggi_badan', 'tanggal_pengukuran']
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
-        db_now = db((db.t_periksa_siswa.id == request.vars.id) & 
-                    (db.t_periksa_siswa.id_siswa == db.t_siswa.id)).select().first()
-        
-        if not db_now:
+        db_now = db((db.t_periksa_siswa.id == request.vars.id))
+
+        if not db_now.select().first():
             return dict(error="Record not found")
         
         db_now.update(berat_badan=request.vars.berat_badan, tinggi_badan=request.vars.tinggi_badan, 
                       tanggal_pengukuran=request.vars.tanggal_pengukuran)
-        id_record_updated = db_now.t_periksa_siswa.id
+        id_record_updated = db_now.select().first().id
         return dict(res='ok', id_update=id_record_updated)
 
     def DELETE(*args, **vars):
