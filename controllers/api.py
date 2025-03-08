@@ -760,7 +760,7 @@ def vendor_pesan_supplier():
         id_supplier = supplier_data.m_supplier.id
         
         #cari alamat:
-        pesanan_supplier = db((db.t_pembelian_bahan.id_supplier==id_supplier)).select().first()
+        pesanan_supplier = db((db.t_pembelian_bahan.id_supplier==id_supplier)).select()
         return dict(stok=pesanan_supplier)
 
     def POST(*args, **vars):
@@ -781,14 +781,18 @@ def vendor_pesan_supplier():
         id_vendor = get_vendor_id(request.vars.id_user)
 
         item = db((db.t_harga_supplier.nama_item == request.vars.nama_item)).select().first()
-        harga_item = item.harga
-        satuan_item = db((db.m_satuan_supplier.id == item.id_satuan_supplier)).select().first().nama_satuan
-        id_satuan_supplier = item.id_satuan_supplier
+        
+        if not item:
+            return dict(error="Item not available")
+        else:
+            harga_item = item.harga
+            satuan_item = db((db.m_satuan_supplier.id == item.id_satuan_supplier)).select().first().nama_satuan
+            id_satuan_supplier = item.id_satuan_supplier
 
-        db.t_pembelian_bahan.insert(id_vendor=id_vendor, id_supplier=request.vars.id_supplier, 
-                                    nama_vendor = nama_vendor, harga = harga_item, id_satuan_supplier = id_satuan_supplier,
-                                    nama_item = request.vars.nama_item, volume=request.vars.volume)
-        return dict(res='ok')
+            db.t_pembelian_bahan.insert(id_vendor=id_vendor, id_supplier=request.vars.id_supplier, 
+                                        nama_vendor = nama_vendor, harga = harga_item, id_satuan_supplier = id_satuan_supplier,
+                                        nama_item = request.vars.nama_item, volume=request.vars.volume)
+            return dict(res='ok')
     
     def PUT(*args, **vars):
         required_vars = ['id_user', 'id_supplier', 'id_item', 'volume', 'nama_item', 'sudah_diterima']
