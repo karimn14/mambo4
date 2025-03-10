@@ -32,6 +32,7 @@ if web2py_version < list(map(int, REQUIRED_WEB2PY_VERSION.split(".")[:3])):
 # -------------------------------------------------------------------------
 configuration = AppConfig(reload=True) #AppConfig(reload=True)
 
+from gluon import current
 if "GAE_APPLICATION" not in os.environ:
     # ---------------------------------------------------------------------
     # if NOT running on Google App Engine use SQLite or other DB
@@ -41,6 +42,7 @@ if "GAE_APPLICATION" not in os.environ:
              #migrate_enabled=configuration.get("db.migrate"),
              #lazy_tables=True,
              check_reserved=["all"])
+    current.db = db
 else:
     # ---------------------------------------------------------------------
     # connect to Google Firestore
@@ -363,15 +365,48 @@ db.define_table('t_pembelian_bahan',
 #     Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id,'%(nama_supplier)s' )),
 #     )
 
+#------------------------------------------------------------------------------------
+## khusus disdik
+#------------------------------------------------------------------------------------
+import datetime
 
+db.define_table('t_kontrak_disdik',
+    Field('id_disdik', 'reference m_disdik', 
+          requires= IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s')),
+    Field('id_vendor', 'reference m_vendor', 
+          requires= IS_IN_DB(db, db.m_vendor.id, '%(nama_vendor)s')),
+    Field('nama', 'string'),
+    Field('nip_npwp', 'string'),
+    Field('jabatan', 'string'),
+    Field('alamat', 'string'),
+    Field('instansi', 'string'),
+    Field('jenis_paket', 'string'),
+    Field('jumlah_kalori', 'float'),
+    Field('jumlah_paket_per_hari', 'integer'),
+    Field('tanggal_mulai', 'date'),
+    Field('tanggal_selesai', 'date'),
+    Field('durasi', 'integer',
+          compute=lambda row: (row.tanggal_selesai - row.tanggal_mulai).days 
+                              if row.tanggal_mulai and row.tanggal_selesai else None,
+          writable=False, readable=True,
+          label="Durasi Kontrak (hari)"),
+    Field('total_biaya_kontrak', 'integer'),
+    Field('bukti_kontrak', 'upload'),
+    Field('time_stamp', 'datetime', default = request.now),
+    Field('deleted', 'boolean', default=False)
+)
+
+
+#-------------------------------------------------------------------------------------
 db.define_table('t_pengajuan_paket',
+    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
+    FIeld('id_disdik', reference = IS_IN_DB(db, db.m_disdik.id,'%(nama_disdik)s' )),
+    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
     Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_paket)s' )),
     Field('jumlah', 'integer'),
+    Field('jenis_paket', reference = IS_IN_DB(db, db.t_kontrak_disdik.jenis_paket,'%(jenis_paket)s' )),
     Field('approve', 'boolean', default=False),
-    Field('id_pengaju', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('id_approver', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
     Field('time_stamp_setuju', 'datetime', default=None),
-    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
     Field('time_stamp', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
@@ -422,33 +457,6 @@ db.define_table('t_keluhan_user',
 ## khusus disdik
 #------------------------------------------------------------------------------------
 import datetime
-
-db.define_table('t_kontrak_disdik',
-    Field('id_disdik', 'reference m_disdik', 
-          requires= IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s')),
-    Field('id_vendor', 'reference m_vendor', 
-          requires= IS_IN_DB(db, db.m_vendor.id, '%(nama_vendor)s')),
-    Field('nama', 'string'),
-    Field('nip_npwp', 'string'),
-    Field('jabatan', 'string'),
-    Field('alamat', 'string'),
-    Field('instansi', 'string'),
-    Field('jenis_paket', 'string'),
-    Field('jumlah_kalori', 'float'),
-    Field('jumlah_paket_per_hari', 'integer'),
-    Field('tanggal_mulai', 'date'),
-    Field('tanggal_selesai', 'date'),
-    Field('durasi', 'integer',
-          compute=lambda row: (row.tanggal_selesai - row.tanggal_mulai).days 
-                              if row.tanggal_mulai and row.tanggal_selesai else None,
-          writable=False, readable=True,
-          label="Durasi Kontrak (hari)"),
-    Field('total_biaya_kontrak', 'integer'),
-    Field('bukti_kontrak', 'upload'),
-    Field('time_stamp', 'datetime', default = request.now),
-    Field('deleted', 'boolean', default=False)
-)
-
 
 
 
