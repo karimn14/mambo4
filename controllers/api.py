@@ -250,8 +250,6 @@ def update_pengajuan_paket():
     db.commit()
     return "Pengajuan paket berhasil diperbarui untuk tanggal " + today.strftime('%Y-%m-%d')
 
-
-
 @request.restful()
 @cors_allow
 def disdik_menu():
@@ -261,9 +259,6 @@ def disdik_menu():
         menus = db(db.m_paket).select().as_list()
         return dict(menus=menus)
     return locals()
-
-
-
 
 @request.restful()
 @cors_allow
@@ -332,6 +327,45 @@ def disdik_kontrak():
             bukti_kontrak=request.vars.bukti_kontrak
         )
         return dict(res='ok')
+    
+    return locals()
+
+@request.restful()
+@cors_allow
+def pengajuan_paket():
+    response.view = 'generic.json'
+    
+    def GET(*args, **vars):
+        # Build a query to fetch non-deleted records
+        query = (db.t_pengajuan_paket.deleted == False)
+        # Optional filtering: if id_vendor is provided, filter by it.
+        if request.vars.id_vendor:
+            query &= (db.t_pengajuan_paket.id_vendor == request.vars.id_vendor)
+        records = db(query).select().as_list()
+        return dict(pengajuan_paket=records)
+    
+    def POST(*args, **vars):
+        # Required fields for insertion
+        required_vars = ['id_vendor', 'id_disdik', 'id_sekolah', 'id_paket', 'jumlah', 'jenis_paket']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        # Insert the new record into t_pengajuan_paket.
+        new_id = db.t_pengajuan_paket.insert(
+            id_vendor = request.vars.id_vendor,
+            id_disdik = request.vars.id_disdik,
+            id_sekolah = request.vars.id_sekolah,
+            id_paket = request.vars.id_paket,
+            jumlah = int(request.vars.jumlah),
+            jenis_paket = request.vars.jenis_paket,
+            approve = False,
+            time_stamp_setuju = None,
+            time_stamp = request.now,
+            deleted = False
+        )
+        db.commit()
+        return dict(res='ok', id=new_id)
     
     return locals()
 

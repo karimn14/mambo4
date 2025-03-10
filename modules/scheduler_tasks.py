@@ -1,25 +1,25 @@
-
 import datetime
 from gluon import current
 
 def update_pengajuan_paket():
-    """
-    Fungsi ini dijalankan setiap hari untuk memproses kontrak aktif dan menginsert data
-    ke tabel t_pengajuan_paket sesuai dengan logika bisnis.
-    """
-    today = datetime.date.today()
     db = current.db
+    today = datetime.date.today()
+    
+    # Only process if today is a weekday (Monday=0 ... Friday=4)
+    if today.weekday() >= 5:
+        return f"Today {today} is weekend; no insertion performed."
+    
+    messages = []
+    
+    # Select active kontrak records for today
+    rows = db((db.t_kontrak_disdik.tanggal_mulai <= today) & 
+              (db.t_kontrak_disdik.tanggal_selesai >= today)).select()
 
-    # Contoh logika: hanya proses jika hari ini Senin-Jumat
-    if today.weekday() > 6:
-        return f"Hari ini bukan hari kerja: {today.strftime('%Y-%m-%d')}"
-    
-    # Misal, ambil semua data kontrak aktif
-    rows = db(db.t_kontrak_disdik.tanggal_mulai <= today)\
-           (db.t_kontrak_disdik.tanggal_selesai >= today).select()
-    
+    if not rows:
+        return f"No active kontrak records found for {today}."
+
     for kontrak in rows:
-        # Cek duplikasi berdasarkan kombinasi id_vendor, jenis_paket, dan tanggal task
+        # Check if an entry for this combination already exists today.
         existing = db(
             (db.t_pengajuan_paket.id_vendor == kontrak.id_vendor) &
             (db.t_pengajuan_paket.jenis_paket == kontrak.jenis_paket) &
@@ -27,19 +27,23 @@ def update_pengajuan_paket():
             (db.t_pengajuan_paket.time_stamp.month() == today.month) &
             (db.t_pengajuan_paket.time_stamp.day() == today.day)
         ).select().first()
-        
+
         if not existing:
             db.t_pengajuan_paket.insert(
-                id_paket = None,  # Atur logika mapping id paket sesuai kebutuhan
-                jumlah = kontrak.jumlah_paket_per_hari,
-                approve = False,
-                id_pengaju = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
-                id_approver = None,
-                time_stamp_setuju = None,
                 id_vendor = kontrak.id_vendor,
+                id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
+                id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
+                id_paket = None,  # Adjust mapping as needed
+                jumlah = kontrak.jumlah_paket_per_hari,
                 jenis_paket = kontrak.jenis_paket,
+                approve = False,
+                time_stamp_setuju = None,
                 time_stamp = datetime.datetime.now(),
                 deleted = False
             )
+            messages.append(f"Inserted record for vendor {kontrak.id_vendor} with jenis_paket {kontrak.jenis_paket}.")
+        else:
+            messages.append(f"Record for vendor {kontrak.id_vendor} and jenis_paket {kontrak.jenis_paket} already exists for today.")
+    
     db.commit()
-    return f"Task update_pengajuan_paket dijalankan pada {today.strftime('%Y-%m-%d')}"
+    return "\n".join(messages)
