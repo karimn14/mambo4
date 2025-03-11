@@ -367,6 +367,37 @@ def pengajuan_paket():
         db.commit()
         return dict(res='ok', id=new_id)
     
+    def PUT(*args, **vars):
+        # Required fields for update
+        required_vars = ['id', 'approve', 'id_vendor']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        # Update the record in t_pengajuan_paket.
+        db_now = db(db.t_pengajuan_paket.id == request.vars.id)
+        if not db_now.select().first():
+            return dict(error="Record not found")
+        
+        db_now.update(approve=bool(request.vars.approve), id_vendor=request.vars.id_vendor)
+
+        # Update time_stamp_setuju if approve is True
+        if request.vars.approve:
+            db_now.update(time_stamp_setuju=request.now)
+
+        # Update status in db.t_status_paket if approve is True
+        if request.vars.approve:
+            db_status = db(db.t_status_paket.id_t_pengajuan_paket == request.vars.id)
+            if db_status.select().first():
+                db_status.update(
+                    status='Approved',
+                    time_stamp=request.now
+                )
+                msg += f"Status {request.vars.id} updated to 'Approved'."
+
+        db.commit()
+        return dict(res='ok', id=request.vars.id, msg=msg)
+    
     return locals()
 
 #------------------------------------------------------------------------------------

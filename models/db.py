@@ -415,31 +415,41 @@ db.define_table('t_pengajuan_paket',
     Field('deleted', 'boolean', default=False)
     )
 
-db.define_table('t_pemberian_paket',
-    Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_paket)s' )),
-    Field('jumlah', 'integer'),
-    Field('id_tujuan', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
-    Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('tanggal_pengiriman', 'date', requires = IS_NOT_EMPTY(error_message='Tanggal harus diisi!')),
-    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
-    Field('tanggal_pengiriman_dari_vendor', 'date'),
-    Field('jumlah_dari_vendor', 'integer'),
-    Field('time_stamp', 'datetime', default = request.now),
-    Field('deleted', 'boolean', default=False)
-    )
+# db.define_table('t_pemberian_paket',
+#     Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_paket)s' )),
+#     Field('jumlah', 'integer'),
+#     Field('id_tujuan', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
+#     Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
+#     Field('tanggal_pengiriman', 'date', requires = IS_NOT_EMPTY(error_message='Tanggal harus diisi!')),
+#     Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
+#     Field('tanggal_pengiriman_dari_vendor', 'date'),
+#     Field('jumlah_dari_vendor', 'integer'),
+#     Field('time_stamp', 'datetime', default = request.now),
+#     Field('deleted', 'boolean', default=False)
+#     )
 
-db.define_table('t_tanda_terima_paket',
-    Field('id_t_pemberian_paket', reference = IS_IN_DB(db, db.t_pemberian_paket.id,'%(jumlah)s' )),
-    Field('jumlah', 'integer', label='Jumlah Diterima'),
-    Field('tanggal_terima', 'string'),
-    Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('time_stamp', 'datetime', default = request.now),
-    Field('deleted', 'boolean', default=False)
-    )
+# db.define_table('t_tanda_terima_paket',
+#     Field('id_t_pemberian_paket', reference = IS_IN_DB(db, db.t_pemberian_paket.id,'%(jumlah)s' )),
+#     Field('jumlah', 'integer', label='Jumlah Diterima'),
+#     Field('tanggal_terima', 'string'),
+#     Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
+#     Field('time_stamp', 'datetime', default = request.now),
+#     Field('deleted', 'boolean', default=False)
+#     )
 
-db.define_table('t_belanja_vendor_item',
-    Field('id_t_pengajuan_paket'),
-    Field('id_t_harga_supplier'),
+
+db.define_table('t_status_paket',
+    Field('id_t_pengajuan_paket', reference = IS_IN_DB(db, db.t_pengajuan_paket.id,'%(id)s' )),
+    Field('id_disdik', 'reference m_disdik', 
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_disdik, '%(id_disdik)s')),
+    Field('id_sekolah', 'reference m_sekolah',
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_sekolah, '%(id_sekolah)s')),
+    Field('id_paket', 'reference m_paket',
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_paket, '%(id_paket)s')),
+    Field('id_vendor', 'reference m_vendor', 
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_vendor, '%(id_vendor)s')),
+    Field('status', 'string'),
+    Field('time_stamp', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 
