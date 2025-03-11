@@ -458,7 +458,6 @@ db.define_table('t_laporan_masyarakat',
     Field('time_stamp', 'datetime', default = request.now),
     )
 
-
 # Watchdog DB
 db.define_table('t_keluhan_user', 
                 Field('keluhan', 'text'),

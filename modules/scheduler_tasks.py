@@ -33,11 +33,21 @@ def update_pengajuan_paket():
                 id_vendor = kontrak.id_vendor,
                 id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
                 id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
-                id_paket = None,  # Adjust mapping as needed
+                id_paket = kontrak.id_paket,  # Adjust mapping as needed
                 jumlah = kontrak.jumlah_paket_per_hari,
                 jenis_paket = kontrak.jenis_paket,
                 approve = False,
                 time_stamp_setuju = None,
+                time_stamp = datetime.datetime.now(),
+                deleted = False
+            )
+            db.t_status_paket.insert(
+                id_pengajuan_paket = db.t_pengajuan_paket.id,
+                id_vendor = kontrak.id_vendor,
+                id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
+                id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
+                id_paket = kontrak.id_paket,  # Adjust mapping as needed
+                status = "Pending",
                 time_stamp = datetime.datetime.now(),
                 deleted = False
             )

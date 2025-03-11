@@ -194,62 +194,6 @@ def get_disdik_id(t_id=None):
     id_disdik = disdik_data.m_disdik.id
     return id_disdik
 
-
-#Fungsi ini dijalankan dengan menggunakan scheduler
-def update_pengajuan_paket():
-    """
-    Fungsi ini dijalankan setiap hari (misalnya via scheduler)
-    untuk memasukkan data ke tabel t_pengajuan_paket jika terdapat kontrak aktif
-    pada hari ini. Data yang diinsert mengambil nilai jumlah dari kolom
-    'jumlah_paket_per_hari' (asumsi ini sesuai dengan "jumlah" yang dimaksud)
-    pada tabel t_kontrak_disdik.
-    
-    Hanya dijalankan pada hari kerja (Senin-Jumat) dan tidak terjadi duplikasi
-    dalam satu hari. Pengecekan duplikasi dilakukan dengan membandingkan id_vendor, jenis_paket,
-    dan tanggal dari time_stamp.
-    """
-    import datetime
-    today = datetime.date.today()
-    
-    # Hanya proses jika hari ini adalah hari kerja (weekday 0-4 = Senin-Jumat)
-    if today.weekday() > 4:
-        return "Hari ini bukan hari kerja, tidak ada update."
-    
-    # Ambil semua data kontrak yang telah diinput di t_kontrak_disdik
-    kontrak_list = db(db.t_kontrak_disdik).select()
-    
-    for kontrak in kontrak_list:
-        # Pastikan kontrak memiliki tanggal_mulai dan tanggal_selesai
-        if kontrak.tanggal_mulai and kontrak.tanggal_selesai:
-            if kontrak.tanggal_mulai <= today <= kontrak.tanggal_selesai:
-                # Cek apakah sudah ada pengajuan paket untuk kontrak ini pada hari ini.
-                # Karena schema t_pengajuan_paket tidak mengacu langsung ke id kontrak,
-                # kita cek berdasarkan kombinasi id_vendor, jenis_paket dan tanggal dari time_stamp.
-                existing = db(
-                    (db.t_pengajuan_paket.id_vendor == kontrak.id_vendor) &
-                    (db.t_pengajuan_paket.jenis_paket == kontrak.jenis_paket) &
-                    (db.t_pengajuan_paket.time_stamp.year() == today.year) &
-                    (db.t_pengajuan_paket.time_stamp.month() == today.month) &
-                    (db.t_pengajuan_paket.time_stamp.day() == today.day)
-                ).select().first()
-                
-                if not existing:
-                    db.t_pengajuan_paket.insert(
-                        id_paket = None,  # Isi sesuai logika bisnis, misalnya jika ada mapping dari paket
-                        jumlah = kontrak.jumlah_paket_per_hari,
-                        approve = False,
-                        # Asumsi id_pengaju bisa diambil dari id_disdik yang disimpan pada kontrak
-                        id_pengaju = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
-                        id_approver = None,
-                        time_stamp_setuju = None,
-                        id_vendor = kontrak.id_vendor,
-                        jenis_paket = kontrak.jenis_paket,
-                        time_stamp = datetime.datetime.now(),
-                        deleted = False
-                    )
-    db.commit()
-    return "Pengajuan paket berhasil diperbarui untuk tanggal " + today.strftime('%Y-%m-%d')
-
 @request.restful()
 @cors_allow
 def disdik_menu():
@@ -312,6 +256,8 @@ def disdik_kontrak():
         db.t_kontrak_disdik.insert(
             id_disdik=id_disdik,
             id_vendor=request.vars.id_vendor,
+            id_sekolah=request.vars.id_sekolah,
+            id_paket=request.vars.id_paket,
             nama=request.vars.nama,
             nip_npwp=request.vars.nip_npwp,
             jabatan=request.vars.jabatan,
@@ -374,6 +320,7 @@ def pengajuan_paket():
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
+        msg = []
         # Update the record in t_pengajuan_paket.
         db_now = db(db.t_pengajuan_paket.id == request.vars.id)
         if not db_now.select().first():
@@ -393,7 +340,7 @@ def pengajuan_paket():
                     status='Approved',
                     time_stamp=request.now
                 )
-                msg += f"Status {request.vars.id} updated to 'Approved'."
+            msg.append(f"Status id:{request.vars.id} updated to 'Approved'.")
 
         db.commit()
         return dict(res='ok', id=request.vars.id, msg=msg)
