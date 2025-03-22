@@ -354,7 +354,7 @@ db.define_table('t_pembelian_bahan',
     Field('harga', 'integer', reference = IS_IN_DB(db, db.t_harga_supplier.id,'%(harga)s' )),
     Field('id_satuan_supplier', reference = IS_IN_DB(db, db.m_satuan_supplier.id,'%(nama_satuan)s' )),
     Field('time_stamp', 'datetime', default = request.now),
-    Field('sudah_diterima', 'boolean', default=False),
+    Field('status', 'string', default="Diproses"),
     Field('deleted', 'boolean', default=False)
 )
 
@@ -409,9 +409,9 @@ db.define_table('t_pengajuan_paket',
     Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_paket)s' )),
     Field('jumlah', 'integer'),
     Field('jenis_paket', reference = IS_IN_DB(db, db.t_kontrak_disdik.jenis_paket,'%(jenis_paket)s' )),
-    Field('approve', 'boolean', default=False),
-    Field('time_stamp_setuju', 'datetime', default=None),
-    Field('time_stamp', 'datetime', default = request.now),
+    Field('approve', 'boolean', default=None),
+    Field('time_stamp_update', 'datetime', default=None),
+    Field('time_stamp_dibuat', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 
@@ -449,14 +449,13 @@ db.define_table('t_status_paket',
     Field('id_vendor', 'reference m_vendor', 
           requires= IS_IN_DB(db, db.t_pengajuan_paket.id_vendor, '%(id_vendor)s')),
     Field('status', 'string'),
-    Field('time_stamp', 'datetime', default = request.now),
+    Field('ts_diproses_ditolak', 'datetime', default=None),
+    Field('ts_dikirim', 'datetime', default=None),
+    Field('ts_diterima', 'datetime', default=None),
+    Field('ts_last_update', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 
-db.define_table('t_laporan_masyarakat',
-    Field('uraian', 'text'),
-    Field('time_stamp', 'datetime', default = request.now),
-    )
 
 # Watchdog DB
 db.define_table('t_keluhan_user', 

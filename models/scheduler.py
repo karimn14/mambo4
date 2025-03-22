@@ -6,4 +6,4 @@ scheduler = Scheduler(db, dict(
 ))
 
 # Queue the task with a period of 60 seconds (or your desired interval)
-scheduler.queue_task('update_pengajuan_paket', period=60)
+scheduler.queue_task('update_pengajuan_paket', period=1000)

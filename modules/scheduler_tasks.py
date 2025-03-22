@@ -29,7 +29,10 @@ def update_pengajuan_paket():
         ).select().first()
 
         if not existing:
-            db.t_pengajuan_paket.insert(
+            # Debugging: Log the values of id_sekolah and id_paket
+            print(f"Debug: id_sekolah={getattr(kontrak, 'id_sekolah', None)}, id_paket={kontrak.id_paket}")
+
+            pengajuan_paket_id = db.t_pengajuan_paket.insert(
                 id_vendor = kontrak.id_vendor,
                 id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
                 id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
@@ -42,7 +45,7 @@ def update_pengajuan_paket():
                 deleted = False
             )
             db.t_status_paket.insert(
-                id_pengajuan_paket = db.t_pengajuan_paket.id,
+                id_pengajuan_paket = pengajuan_paket_id,
                 id_vendor = kontrak.id_vendor,
                 id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
                 id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
