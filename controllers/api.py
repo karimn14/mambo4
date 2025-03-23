@@ -313,12 +313,29 @@ def pengajuan_paket():
         db.commit()
         return dict(res='ok', id=new_id)
     
-    
     return locals()
 
 #------------------------------------------------------------------------------------
 ## untuk kepsek
 #------------------------------------------------------------------------------------
+
+def get_kepsek_id(t_id=None):
+    # Fetch kepala sekolah data
+    kepsek_data = db((db.map_sekolah_kepala.id_kepala_sekolah == db.auth_user.id) & 
+                     (db.map_sekolah_kepala.id_sekolah == db.m_sekolah.id) & 
+                     (db.auth_user.id == t_id)).select().first()
+    
+    if not kepsek_data:
+        return dict(error="Kepsek not found")
+
+    # Ensure id_kepsek is valid
+    if not kepsek_data.m_sekolah.id:
+        return dict(error="Invalid school ID for kepsek")
+
+    id_kepsek = kepsek_data.m_sekolah.id
+    return id_kepsek
+
+
 @request.restful()
 @cors_allow
 def cek_kepsek():
@@ -359,22 +376,6 @@ def cek_kepsek():
             id_kode_pos=id_kode_pos, user=id_user)
 
     return locals()
-
-def get_kepsek_id(t_id=None):
-    # Fetch kepala sekolah data
-    kepsek_data = db((db.map_sekolah_kepala.id_kepala_sekolah == db.auth_user.id) & 
-                     (db.map_sekolah_kepala.id_sekolah == db.m_sekolah.id) & 
-                     (db.auth_user.id == t_id)).select().first()
-    
-    if not kepsek_data:
-        return dict(error="Kepsek not found")
-
-    # Ensure id_kepsek is valid
-    if not kepsek_data.m_sekolah.id:
-        return dict(error="Invalid school ID for kepsek")
-
-    id_kepsek = kepsek_data.m_sekolah.id
-    return id_kepsek
 
 @request.restful()
 @cors_allow
@@ -605,7 +606,8 @@ def pesanan_sekolah():
         if not db_now.select().first():
             return dict(error="Record not found")
         
-        db_now.update(status="Sudah Diterima")
+        if request.vars.status == 'Sudah Diterima':
+            db_now.update(status=request.vars.status, ts_diterima=request.now)
         return dict(res='ok', id_update=request.vars.id_paket)
     return locals()
 
@@ -973,119 +975,61 @@ def menu_supplier():
         return dict(res='ok', id_deleted=request.vars.id_item)
         
     return locals()
-
+    
 @request.restful()
 @cors_allow
-def stok_item_supplier():
-    
+def pesanan_vendor():
     response.view = 'generic.json'
     def GET(*args, **vars):
-        
-        t_id = request.vars.id_user
-        #Langsung ambil data vendor dari database, bukan dari API cek_vendor
-        if t_id:
-            supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
-                         (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
-                         (db.auth_user.id == t_id)).select().first()
-            if not supplier_data:
-                return dict(error="Supplier not found")
-
-            id_supplier = supplier_data.m_supplier.id
-
-            q = db( (db.t_menu_supplier.id_supplier == id_supplier)&
-                    (db.t_menu_supplier.id_satuan_supplier == db.m_satuan_supplier.id)        
-                    ).select().as_list()
-        else:
-            q = db.t_menu_supplier.select().as_list()
-        
-        #sanitizing response:    
-        for w in q:
-            w['t_menu_supplier'].pop('time_stamp')
-            w['t_menu_supplier'].pop('id_supplier')
-            w['t_menu_supplier']['satuan']=w['m_satuan_supplier']['nama_satuan']
-            w['t_menu_supplier'].pop('id_satuan_supplier')
-            w.pop('m_satuan_supplier')
-
-        return dict(daftar=q)
-
-    return locals()    
-
-@request.restful()
-@cors_allow
-def tambah_stok_item_supplier():    
-    response.view = 'generic.json'
-    def PUT(*args, **vars):
         if not request.vars.id_user:
             raise HTTP(400, "Missing id_user")
-        if not request.vars.id_stok:
-            raise HTTP(400, "Missing id_stok")
         
-
-        t_id = request.vars.id_user
-        #Langsung ambil data vendor dari database, bukan dari API cek_vendor
-        supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
-                         (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
-                         (db.auth_user.id == t_id)).select().first()
-        if not supplier_data:
-            return dict(error="Supplier not found")
-
-        id_supplier = supplier_data.m_supplier.id
+        id_supplier = get_supplier_id(request.vars.id_user)
+        pesanan = db(db.t_pembelian_bahan.id_supplier == id_supplier).select().as_list()
+        
+        # Sanitize response
+        for p in pesanan:
+            p.pop('time_stamp', None)
+            p.pop('deleted', None)
+        
+        return dict(pesanan=pesanan)
     
-        db((db.t_menu_supplier.id == request.vars.id_stok) &
-        (db.t_menu_supplier.id_supplier == id_supplier)
-        ).update(volume=request.vars.qty)
-        return dict(res='ok', id_supplier=id_supplier, updated_item_id = request.vars.id_stok)
-
-    return locals()
-
-@request.restful()
-@cors_allow
-def tambah_item_baru_supplier():
-    response.view = 'generic.json'
-
-    #GET Nama Satuan Item
-    def GET(*args, **vars):
-        daftar_satuan = db(db.m_satuan_supplier["nama_satuan"]).select().as_list()
-
-        if request.vars.satuan != daftar_satuan[2]:
-            db.m_satuan_supplier.insert(nama_satuan=request.vars.satuan)
-            daftar_satuan = db(db.m_satuan_supplier).select().as_list()
-        return dict(daftar_satuan = daftar_satuan)
-    #POST Item satuan
-    def POST(*args, **vars):
-        if not (request.vars.id_user and request.vars.nama_item and request.vars.qty and request.vars.harga):
-            raise HTTP(400, "Missing required parameters")
-
-        t_id = request.vars.id_user
-        #Langsung ambil data vendor dari database, bukan dari API cek_vendor
-        supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
-                         (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
-                         (db.auth_user.id == t_id)).select().first()
-        if not supplier_data:
-            return dict(error="Supplier not found")
-
-        id_supplier = supplier_data.m_supplier.id
-
+    def PUT(*args, **vars):
+        required_vars = ['id_user', 'id_item', 'volume', 'nama_item', 'sudah_diterima']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
-        daftar_satuan = db(db.m_satuan_supplier["nama_satuan"]).select().as_list()
-        nama_satuan_list = [item["nama_satuan"] for item in daftar_satuan]
+        id_supplier = get_supplier_id(request.vars.id_user)
+        db_now = db((db.t_pembelian_bahan.id == request.vars.id_item) & 
+                    (db.t_pembelian_bahan.id_supplier == id_supplier))
         
-        if request.vars.satuan != nama_satuan_list:
-            db.m_satuan_supplier.insert(nama_satuan=request.vars.satuan)
-            daftar_satuan = db(db.m_satuan_supplier).select().as_list()
-
-        id_satuan = db(db.m_satuan_supplier["nama_satuan"] == request.vars.satuan).select().as_list()[0]['id']
-
-        db.t_menu_supplier.insert(id_supplier= id_supplier, 
-                                   nama_item=request.vars.nama_item, 
-                                   volume=request.vars.qty, 
-                                   harga=request.vars.harga,
-                                   id_satuan_supplier=id_satuan)
-        return dict(res='ok')
-
+        if not db_now.select().first():
+            return dict(error="Item not found")
+        
+        db_now.update(
+            volume=request.vars.volume,
+            nama_item=request.vars.nama_item,
+            sudah_diterima=request.vars.sudah_diterima
+        )
+        return dict(res='ok', id_update=request.vars.id_item)
+        
+    def DELETE(*args, **vars):
+        required_vars = ['id_user', 'id_item']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_supplier = get_supplier_id(request.vars.id_user)
+        db_now = db((db.t_pembelian_bahan.id == request.vars.id_item) & (db.t_pembelian_bahan.id_supplier == id_supplier))
+        
+        if not db_now.select().first():
+            return dict(error="Item not found")
+        
+        db_now.update(deleted=True)
+        return dict(res='ok', id_deleted=request.vars.id_item)
+        
     return locals()
-
-
 #------------------------------------------------------------------------------------
 ## untuk Watchdog
 #------------------------------------------------------------------------------------

@@ -9469,3 +9469,39 @@ success!
 success!
 success!
 success!
+success!
+success!
+timestamp: 2025-03-23T18:50:06.719741
+CREATE TABLE "t_pembelian_bahan"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_supplier" CHAR(512),
+    "id_vendor" CHAR(512),
+    "nama_vendor" CHAR(512),
+    "nama_item" CHAR(512),
+    "volume" INTEGER,
+    "harga" INTEGER,
+    "id_satuan_supplier" CHAR(512),
+    "time_stamp" TIMESTAMP,
+    "status" CHAR(512),
+    "deleted" CHAR(1)
+);
+success!
+success!
+timestamp: 2025-03-23T18:52:09.631315
+CREATE TABLE "t_pembelian_bahan"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "id_supplier" CHAR(512),
+    "id_vendor" CHAR(512),
+    "nama_vendor" CHAR(512),
+    "nama_item" CHAR(512),
+    "volume" INTEGER,
+    "harga" INTEGER,
+    "id_satuan_supplier" CHAR(512),
+    "time_stamp" TIMESTAMP,
+    "status" CHAR(512),
+    "deleted" CHAR(1)
+);
+success!
+success!
+success!
+success!
