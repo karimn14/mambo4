@@ -335,7 +335,7 @@ db.define_table('t_periksa_siswa',
     Field('deleted', 'boolean', default=False)    
     )
 
-db.define_table('t_harga_supplier',
+db.define_table('t_menu_supplier',
     Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id, '%(nama_supplier)s' )),
     Field('nama_item', 'string'),
     Field('volume', 'integer'),
@@ -351,7 +351,7 @@ db.define_table('t_pembelian_bahan',
     Field('nama_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
     Field('nama_item', 'string'),
     Field('volume', 'integer'),
-    Field('harga', 'integer', reference = IS_IN_DB(db, db.t_harga_supplier.id,'%(harga)s' )),
+    Field('harga', 'integer', reference = IS_IN_DB(db, db.t_menu_supplier.id,'%(harga)s' )),
     Field('id_satuan_supplier', reference = IS_IN_DB(db, db.m_satuan_supplier.id,'%(nama_satuan)s' )),
     Field('time_stamp', 'datetime', default = request.now),
     Field('status', 'string', default="Diproses"),
@@ -449,10 +449,10 @@ db.define_table('t_status_paket',
     Field('id_vendor', 'reference m_vendor', 
           requires= IS_IN_DB(db, db.t_pengajuan_paket.id_vendor, '%(id_vendor)s')),
     Field('status', 'string'),
+    Field('ts_dibuat', 'datetime', default = request.now),
     Field('ts_diproses_ditolak', 'datetime', default=None),
     Field('ts_dikirim', 'datetime', default=None),
     Field('ts_diterima', 'datetime', default=None),
-    Field('ts_last_update', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 

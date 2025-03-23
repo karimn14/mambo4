@@ -313,37 +313,6 @@ def pengajuan_paket():
         db.commit()
         return dict(res='ok', id=new_id)
     
-    def PUT(*args, **vars):
-        # Required fields for update
-        required_vars = ['id', 'approve', 'id_vendor']
-        missing_vars = [var for var in required_vars if not request.vars.get(var)]
-        if missing_vars:
-            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
-        
-        msg = []
-        # Update the record in t_pengajuan_paket.
-        db_now = db(db.t_pengajuan_paket.id == request.vars.id)
-        if not db_now.select().first():
-            return dict(error="Record not found")
-        
-        db_now.update(approve=bool(request.vars.approve), id_vendor=request.vars.id_vendor)
-
-        # Update time_stamp_setuju if approve is True
-        if request.vars.approve:
-            db_now.update(time_stamp_setuju=request.now)
-
-        # Update status in db.t_status_paket if approve is True
-        if request.vars.approve:
-            db_status = db(db.t_status_paket.id_t_pengajuan_paket == request.vars.id)
-            if db_status.select().first():
-                db_status.update(
-                    status='Approved',
-                    time_stamp=request.now
-                )
-            msg.append(f"Status id:{request.vars.id} updated to 'Approved'.")
-
-        db.commit()
-        return dict(res='ok', id=request.vars.id, msg=msg)
     
     return locals()
 
@@ -597,6 +566,50 @@ def periksa_siswa():
         return dict(res='ok', id_deleted=request.vars.id)
     return locals()
 
+@request.restful()
+@cors_allow
+def pesanan_sekolah():
+    response.view = 'generic.json'
+    def GET(*args, **vars):
+        if not request.vars.id_sekolah:
+            raise HTTP(400, "Missing id_sekolah")
+        try:
+            id_sekolah = int(request.vars.id_sekolah)  # Ensure id_sekolah is an integer
+        except ValueError:
+            return dict(error="Invalid id_sekolah format. Must be an integer.")
+        
+        pesanan = db(db.t_status_paket.id_sekolah == id_sekolah).select().as_list()
+        
+        # Sanitize response
+        sanitized_pesanan = []
+        for p in pesanan:
+            sanitized_pesanan.append({
+                'status': p['status'],
+                'id_sekolah': p['id_sekolah'],
+                'id_paket': p['id_paket'],
+                'id_vendor': p['id_vendor']
+            })
+        
+        return dict(pesanan=sanitized_pesanan)
+
+    def PUT(*args, **vars):
+        required_vars = ['id_sekolah', 'id_paket', 'id_vendor', 'status']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        db_now = db((db.t_status_paket.id_sekolah == request.vars.id_sekolah) & 
+                    (db.t_status_paket.id_paket == request.vars.id_paket) & 
+                    (db.t_status_paket.id_vendor == request.vars.id_vendor))
+        
+        if not db_now.select().first():
+            return dict(error="Record not found")
+        
+        db_now.update(status="Sudah Diterima")
+        return dict(res='ok', id_update=request.vars.id_paket)
+    return locals()
+
+
 #------------------------------------------------------------------------------------
 ## untuk Vendor
 #------------------------------------------------------------------------------------
@@ -656,85 +669,7 @@ def cek_vendor():
 
     return locals()
 
-
-# VENDOR ORDERKU
-@request.restful()
-@cors_allow
-def vendor_orderku():
-    response.view = 'generic.json'
-    def GET(id_user=None):
-        if not request.vars.id_user:
-            return dict(error="id_user is required")       
-        try:
-            t_id = int(request.vars.id_user)
-        except ValueError:
-            return dict(error="Invalid id format")
-
-        id_vendor = get_vendor_id(request.vars.id_user)
-
-        q = ((db.t_pemberian_paket.id_vendor == id_vendor) &
-            (db.t_pemberian_paket.tanggal_pengiriman_dari_vendor == None) &
-            (db.t_pemberian_paket.id_tujuan == db.m_sekolah.id) &
-            (db.t_pemberian_paket.id_paket == db.m_paket.id))
-        
-        l = db(q).select().as_list()
-
-        # Sanitizing response
-        for n in l:
-            n['t_pemberian_paket'].pop('time_stamp', None)
-            n['t_pemberian_paket'].pop('id_vendor', None)
-            n['t_pemberian_paket'].pop('id_paket', None)
-            n['m_paket'].pop('time_stamp', None)
-            n['m_sekolah'].pop('time_stamp', None)
-
-        return dict(orderku=l)
-
-    return locals()
-
-# VENDOR Konfirmasi Pengiriman Paket
-@request.restful()
-@cors_allow
-def vendor_jumlah():
-    response.view = 'generic.json'
-    def PUT(*args, **vars):
-        if request.vars.id_user==None:
-            raise HTTP(400)        
-        if request.vars.id==None:
-            raise HTTP(400) 
-
-        id_vendor = get_vendor_id(request.vars.id_user)
-        db((db.t_pemberian_paket.id==request.vars.id) & 
-           (db.t_pemberian_paket.id_vendor == id_vendor)).update(tanggal_pengiriman_dari_vendor=request.vars.tanggal, 
-            jumlah_dari_vendor=request.vars.qty, id_user=request.vars.id_user)
-        return dict(res='ok', id_vendor=id_vendor)
-    return locals()
-
-@request.restful()
-@cors_allow
-def vendor_orderku_total():
-    response.view = 'generic.json'
-    def GET(*args, **vars):
-        if request.vars.id_user==None:
-            raise HTTP(400)        
-
-        id_vendor = get_vendor_id(request.vars.id_user)
-
-        q = ((db.t_pemberian_paket.id_vendor == id_vendor) &
-            (db.t_pemberian_paket.id_tujuan == db.m_sekolah.id) &
-            (db.t_pemberian_paket.id_paket == db.m_paket.id))
-        l = db(q).select().as_list()
-        #sanitizing response:
-        for n in l:
-            n['t_pemberian_paket'].pop('time_stamp')
-            n['t_pemberian_paket'].pop('id_vendor')
-            n['t_pemberian_paket'].pop('id_paket')
-            n['m_paket'].pop('time_stamp')
-            n['m_sekolah'].pop('time_stamp')
-
-        return dict(orderku=l)
-    return locals()
-
-#Tambah Produk Vendor
+# Menu Vendor
 @request.restful()
 @cors_allow
 def vendor_paket():
@@ -843,7 +778,7 @@ def vendor_pesan_supplier():
         
         id_vendor = get_vendor_id(request.vars.id_user)
 
-        item = db((db.t_harga_supplier.nama_item == request.vars.nama_item)).select().first()
+        item = db((db.t_menu_supplier.nama_item == request.vars.nama_item)).select().first()
         
         if not item:
             return dict(error="Item not available")
@@ -898,6 +833,28 @@ def vendor_pesan_supplier():
 
     return locals()
     
+@request.restful()
+@cors_allow
+def terima_pengajuan():
+    response.view = 'generic.json'
+    
+    def PUT(*args, **vars):
+        # Required fields for update
+        required_vars = ['id', 'approve', 'id_vendor']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        msg = []
+        # Update the record in t_pengajuan_paket.
+        db_now = db(db.t_pengajuan_paket.id == request.vars.id)
+        if not db_now.select().first():
+            return dict(error="Record not found")
+        
+        db_now.update(approve=bool(request.vars.approve), id_vendor=request.vars.id_vendor, time_stamp_update=request.now)
+        return dict(res='ok', id=request.vars.id, msg=msg)
+    return locals()
+
 #------------------------------------------------------------------------------------
 ## untuk Supplier
 #------------------------------------------------------------------------------------
@@ -945,7 +902,6 @@ def cek_suppliers():
         return dict(supplier=id_toko_saya)
     return locals()
 
-
 @request.restful()
 @cors_allow
 def menu_supplier():
@@ -955,9 +911,9 @@ def menu_supplier():
 
         if request.vars.id_user:
             id_supplier = get_supplier_id(request.vars.id_user)
-            q = db(db.t_harga_supplier.id_supplier == id_supplier).select().as_list()
+            q = db(db.t_menu_supplier.id_supplier == id_supplier).select().as_list()
         else:
-            q = db(db.t_harga_supplier).select().as_list()
+            q = db(db.t_menu_supplier).select().as_list()
         # Sanitizing response
         for item in q:
             item.pop('time_stamp', None)
@@ -971,8 +927,8 @@ def menu_supplier():
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
-        id_supplier = get_vendor_id(request.vars.id_user)
-        db.t_harga_supplier.insert(
+        id_supplier = get_supplier_id(request.vars.id_user)
+        db.t_menu_supplier.insert(
             id_supplier=id_supplier,
             nama_item=request.vars.nama_item,
             harga=request.vars.harga,
@@ -988,7 +944,7 @@ def menu_supplier():
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
         id_supplier = get_supplier_id(request.vars.id_user)
-        db_now = db((db.t_harga_supplier.id == request.vars.id_item) & (db.t_harga_supplier.id_supplier == id_supplier))
+        db_now = db((db.t_menu_supplier.id == request.vars.id_item) & (db.t_menu_supplier.id_supplier == id_supplier))
         
         if not db_now.select().first():
             return dict(error="Item not found")
@@ -1007,8 +963,8 @@ def menu_supplier():
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
-        id_supplier = get_vendor_id(request.vars.id_user)
-        db_now = db((db.t_harga_supplier.id == request.vars.id_item) & (db.t_harga_supplier.id_supplier == id_supplier))
+        id_supplier = get_supplier_id(request.vars.id_user)
+        db_now = db((db.t_menu_supplier.id == request.vars.id_item) & (db.t_menu_supplier.id_supplier == id_supplier))
         
         if not db_now.select().first():
             return dict(error="Item not found")
@@ -1036,18 +992,18 @@ def stok_item_supplier():
 
             id_supplier = supplier_data.m_supplier.id
 
-            q = db( (db.t_harga_supplier.id_supplier == id_supplier)&
-                    (db.t_harga_supplier.id_satuan_supplier == db.m_satuan_supplier.id)        
+            q = db( (db.t_menu_supplier.id_supplier == id_supplier)&
+                    (db.t_menu_supplier.id_satuan_supplier == db.m_satuan_supplier.id)        
                     ).select().as_list()
         else:
-            q = db.t_harga_supplier.select().as_list()
+            q = db.t_menu_supplier.select().as_list()
         
         #sanitizing response:    
         for w in q:
-            w['t_harga_supplier'].pop('time_stamp')
-            w['t_harga_supplier'].pop('id_supplier')
-            w['t_harga_supplier']['satuan']=w['m_satuan_supplier']['nama_satuan']
-            w['t_harga_supplier'].pop('id_satuan_supplier')
+            w['t_menu_supplier'].pop('time_stamp')
+            w['t_menu_supplier'].pop('id_supplier')
+            w['t_menu_supplier']['satuan']=w['m_satuan_supplier']['nama_satuan']
+            w['t_menu_supplier'].pop('id_satuan_supplier')
             w.pop('m_satuan_supplier')
 
         return dict(daftar=q)
@@ -1075,8 +1031,8 @@ def tambah_stok_item_supplier():
 
         id_supplier = supplier_data.m_supplier.id
     
-        db((db.t_harga_supplier.id == request.vars.id_stok) &
-        (db.t_harga_supplier.id_supplier == id_supplier)
+        db((db.t_menu_supplier.id == request.vars.id_stok) &
+        (db.t_menu_supplier.id_supplier == id_supplier)
         ).update(volume=request.vars.qty)
         return dict(res='ok', id_supplier=id_supplier, updated_item_id = request.vars.id_stok)
 
@@ -1120,7 +1076,7 @@ def tambah_item_baru_supplier():
 
         id_satuan = db(db.m_satuan_supplier["nama_satuan"] == request.vars.satuan).select().as_list()[0]['id']
 
-        db.t_harga_supplier.insert(id_supplier= id_supplier, 
+        db.t_menu_supplier.insert(id_supplier= id_supplier, 
                                    nama_item=request.vars.nama_item, 
                                    volume=request.vars.qty, 
                                    harga=request.vars.harga,

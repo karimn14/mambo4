@@ -6,7 +6,7 @@ def update_pengajuan_paket():
     today = datetime.date.today()
     
     # Only process if today is a weekday (Monday=0 ... Friday=4)
-    if today.weekday() >= 5:
+    if today.weekday() >= 7:
         return f"Today {today} is weekend; no insertion performed."
     
     messages = []
@@ -23,9 +23,9 @@ def update_pengajuan_paket():
         existing = db(
             (db.t_pengajuan_paket.id_vendor == kontrak.id_vendor) &
             (db.t_pengajuan_paket.jenis_paket == kontrak.jenis_paket) &
-            (db.t_pengajuan_paket.time_stamp.year() == today.year) &
-            (db.t_pengajuan_paket.time_stamp.month() == today.month) &
-            (db.t_pengajuan_paket.time_stamp.day() == today.day)
+            (db.t_pengajuan_paket.time_stamp_dibuat.year() == today.year) &
+            (db.t_pengajuan_paket.time_stamp_dibuat.month() == today.month) &
+            (db.t_pengajuan_paket.time_stamp_dibuat.day() == today.day)
         ).select().first()
 
         if not existing:
@@ -40,18 +40,21 @@ def update_pengajuan_paket():
                 jumlah = kontrak.jumlah_paket_per_hari,
                 jenis_paket = kontrak.jenis_paket,
                 approve = False,
-                time_stamp_setuju = None,
-                time_stamp = datetime.datetime.now(),
+                time_stamp_update = None,
+                time_stamp_dibuat = datetime.datetime.now(),
                 deleted = False
             )
             db.t_status_paket.insert(
-                id_pengajuan_paket = pengajuan_paket_id,
+                id_t_pengajuan_paket = pengajuan_paket_id,
                 id_vendor = kontrak.id_vendor,
                 id_disdik = kontrak.id_disdik if hasattr(kontrak, 'id_disdik') else None,
                 id_sekolah = kontrak.id_sekolah if hasattr(kontrak, 'id_sekolah') else None,
                 id_paket = kontrak.id_paket,  # Adjust mapping as needed
                 status = "Pending",
-                time_stamp = datetime.datetime.now(),
+                ts_diproses_ditolak = None,
+                ts_dikirim = None,
+                ts_diterima = None,
+                ts_dibuat = datetime.datetime.now(),
                 deleted = False
             )
             messages.append(f"Inserted record for vendor {kontrak.id_vendor} with jenis_paket {kontrak.jenis_paket}.")
