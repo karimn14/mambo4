@@ -91,6 +91,21 @@ def api_login():
     return locals()
 
 #------------------------------------------------------------------------------------
+## untuk semua akun
+#------------------------------------------------------------------------------------
+
+@request.restful()
+@cors_allow
+def status_paket():
+    response.view = 'generic.json'
+    def GET(*args, **vars):
+        response.view = 'generic.json'
+        
+        status_paket = db(db.t_status_paket).select().as_list()
+        return dict(status_paket=status_paket)
+    return locals()
+
+#------------------------------------------------------------------------------------
 ## untuk disdik
 #------------------------------------------------------------------------------------
 #Added: Arga 15-02-2025
@@ -276,6 +291,7 @@ def disdik_kontrak():
     
     return locals()
 
+#debug
 @request.restful()
 @cors_allow
 def pengajuan_paket():
@@ -334,7 +350,6 @@ def get_kepsek_id(t_id=None):
 
     id_kepsek = kepsek_data.m_sekolah.id
     return id_kepsek
-
 
 @request.restful()
 @cors_allow
@@ -592,23 +607,30 @@ def pesanan_sekolah():
             })
         
         return dict(pesanan=sanitized_pesanan)
+    return locals()
 
+@request.restful()
+@cors_allow
+def terima_paket():
+    response.view = 'generic.json'
     def PUT(*args, **vars):
-        required_vars = ['id_sekolah', 'id_paket', 'id_vendor', 'status']
+        required_vars = ['id_user', 'id', 'id_vendor']
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
-        db_now = db((db.t_status_paket.id_sekolah == request.vars.id_sekolah) & 
-                    (db.t_status_paket.id_paket == request.vars.id_paket) & 
+        id_sekolah = get_kepsek_id(request.vars.id_user)
+        
+        db_now = db((db.t_status_paket.id_sekolah == id_sekolah) & 
+                    (db.t_status_paket.id_t_pengajuan_paket == request.vars.id) & 
                     (db.t_status_paket.id_vendor == request.vars.id_vendor))
         
         if not db_now.select().first():
             return dict(error="Record not found")
         
-        if request.vars.status == 'Sudah Diterima':
-            db_now.update(status=request.vars.status, ts_diterima=request.now)
-        return dict(res='ok', id_update=request.vars.id_paket)
+        db_now.update(status="Diterima", ts_diterima=request.now)
+        
+        return dict(res='ok', id_update=request.vars.id)
     return locals()
 
 
@@ -617,7 +639,6 @@ def pesanan_sekolah():
 #------------------------------------------------------------------------------------
 
 # CEK VENDOR
-
 def get_vendor_id(t_id=None):
     #Langsung ambil data vendor dari database, bukan dari API cek_vendor
     vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
@@ -837,6 +858,48 @@ def vendor_pesan_supplier():
     
 @request.restful()
 @cors_allow
+def status_paket_vendor():
+    response.view = 'generic.json'
+    def GET(*args, **vars):
+        if request.vars.id_user:
+            try:
+                t_id = int(request.vars.id_user)
+            except ValueError:
+                return dict(error="Invalid id format")
+            
+            id_vendor = get_vendor_id(request.vars.id_user)
+            q = db(db.t_status_paket.id_vendor == id_vendor).select().as_list()
+        else:
+            q = db(db.t_status_paket).select().as_list()
+        
+        return dict(status_paket=q)
+    return locals()
+
+@request.restful()
+@cors_allow
+def kirim_paket():
+    response.view = 'generic.json'
+    def PUT(*args, **vars):
+        required_vars = ['id_user', 'id', 'id_sekolah']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_vendor = get_vendor_id(request.vars.id_user)
+        db_now = db((db.t_status_paket.id_vendor == id_vendor) & 
+                    (db.t_status_paket.id_t_pengajuan_paket == request.vars.id) & 
+                    (db.t_status_paket.id_sekolah == request.vars.id_sekolah))
+        
+        if not db_now.select().first():
+            return dict(error="Record not found")
+        
+        db_now.update(status="Dikirim", ts_dikirim=request.now)
+        return dict(res=f"{request.vars.id} sudah terkirim")
+    
+    return locals()
+
+@request.restful()
+@cors_allow
 def terima_pengajuan():
     response.view = 'generic.json'
     
@@ -846,15 +909,26 @@ def terima_pengajuan():
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
-        
-        msg = []
+
         # Update the record in t_pengajuan_paket.
-        db_now = db(db.t_pengajuan_paket.id == request.vars.id)
+        db_now = db((db.t_pengajuan_paket.id == request.vars.id) & 
+                (db.t_pengajuan_paket.id_vendor == request.vars.id_vendor))
         if not db_now.select().first():
             return dict(error="Record not found")
+
+        # Update the record in t_status_paket.
+        db_now2 = db((db.t_status_paket.id_t_pengajuan_paket == request.vars.id) & 
+                 (db.t_status_paket.id_vendor == request.vars.id_vendor))
+        if not db_now2.select().first():
+            return dict(error="Record not found in Status Paket Table")
         
+        if request.vars.approve:
+            db_now2.update(status="Diproses", ts_diproses_ditolak=request.now)
+        else:
+            db_now2.update(status="Ditolak", ts_diproses_ditolak=request.now)
+
         db_now.update(approve=bool(request.vars.approve), id_vendor=request.vars.id_vendor, time_stamp_update=request.now)
-        return dict(res='ok', id=request.vars.id, msg=msg)
+        return dict(res='ok', id=request.vars.id)
     return locals()
 
 #------------------------------------------------------------------------------------
@@ -1059,6 +1133,10 @@ def keluhan_user():
         return dict(res='ok') 
     return locals()
 
+#------------------------------------------------------------------------------------
+## untuk debug
+#------------------------------------------------------------------------------------
+
 @request.restful()
 @cors_allow
 def debug_pengajuan():
@@ -1096,7 +1174,6 @@ def debug_status_paket():
 
     return locals()
 
-
 @request.restful()
 @cors_allow
 def reset_db_status_paket():
@@ -1104,6 +1181,17 @@ def reset_db_status_paket():
 
     def GET(*args, **vars):
         db.t_status_paket.truncate()
+
+        return dict(res='ok')
+    return locals()
+
+@request.restful()
+@cors_allow
+def reset_db_pengajuan_paket():
+    response.view = 'generic.json'
+
+    def GET(*args, **vars):
+        db.t_pengajuan_paket.truncate()
 
         return dict(res='ok')
     return locals()

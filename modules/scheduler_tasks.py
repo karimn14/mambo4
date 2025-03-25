@@ -39,7 +39,7 @@ def update_pengajuan_paket():
                 id_paket = kontrak.id_paket,  # Adjust mapping as needed
                 jumlah = kontrak.jumlah_paket_per_hari,
                 jenis_paket = kontrak.jenis_paket,
-                approve = False,
+                approve = None,
                 time_stamp_update = None,
                 time_stamp_dibuat = datetime.datetime.now(),
                 deleted = False

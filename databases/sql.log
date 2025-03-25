@@ -453,3 +453,12 @@ success!
 DELETE FROM "t_status_paket";
 DELETE FROM sqlite_sequence WHERE name='t_status_paket'
 success!
+DELETE FROM "t_status_paket";
+DELETE FROM sqlite_sequence WHERE name='t_status_paket'
+success!
+DELETE FROM "t_status_paket";
+DELETE FROM sqlite_sequence WHERE name='t_status_paket'
+success!
+DELETE FROM "t_pengajuan_paket";
+DELETE FROM sqlite_sequence WHERE name='t_pengajuan_paket'
+success!
