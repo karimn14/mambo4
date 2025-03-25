@@ -41,6 +41,7 @@ if "GAE_APPLICATION" not in os.environ:
              pool_size=configuration.get("db.pool_size"),
              #migrate_enabled=configuration.get("db.migrate"),
              #lazy_tables=True,
+             migrate=True, fake_migrate_all=True,
              check_reserved=["all"])
     current.db = db
 else:

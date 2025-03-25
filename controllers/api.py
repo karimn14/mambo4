@@ -1074,3 +1074,36 @@ def debug_pengajuan():
 
         return dict(res=rows)
     return locals()
+
+@request.restful()
+@cors_allow
+def debug_status_paket():
+    response.view = 'generic.json'
+
+    def POST(*args, **vars):
+        required_vars = ['id_sekolah', 'id_paket', 'id_vendor', 'status']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        db.t_status_paket.insert(
+            id_sekolah=request.vars.id_sekolah,
+            id_paket=request.vars.id_paket,
+            id_vendor=request.vars.id_vendor,
+            status=request.vars.status
+        )
+        return dict(res='ok')
+
+    return locals()
+
+
+@request.restful()
+@cors_allow
+def reset_db_status_paket():
+    response.view = 'generic.json'
+
+    def GET(*args, **vars):
+        db.t_status_paket.truncate()
+
+        return dict(res='ok')
+    return locals()
