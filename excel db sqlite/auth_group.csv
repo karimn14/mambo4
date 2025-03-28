@@ -1,0 +1,7 @@
+id,role,description
+1,super_admin,Super Admin untuk Mambo
+2,kepala_sekolah,Kepala Sekolah
+3,disdik_admin,Admin dari Disdik Regional
+4,supplier,Supplier
+5,vendor,Vendor/Katering
+6,user_8,Group uniquely assigned to user 8

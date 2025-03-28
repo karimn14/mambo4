@@ -37,13 +37,12 @@ if "GAE_APPLICATION" not in os.environ:
     # ---------------------------------------------------------------------
     # if NOT running on Google App Engine use SQLite or other DB
     # ---------------------------------------------------------------------
-    db = DAL(configuration.get("db.uri"),
-             pool_size=configuration.get("db.pool_size"),
-             #migrate_enabled=configuration.get("db.migrate"),
-             #lazy_tables=True,
-             migrate=True, fake_migrate_all=True,
-             check_reserved=["all"])
+    db = DAL('mysql://Nabil:zOralime14@localhost/mambo4?charset=utf8mb4', 
+             migrate_enabled=True, 
+             #fake_migrate=True
+             )
     current.db = db
+
 else:
     # ---------------------------------------------------------------------
     # connect to Google Firestore
@@ -175,28 +174,35 @@ db.define_table('m_propinsi',
     )
 
 db.define_table('m_kabupaten_kota',
-    Field('id_propinsi', reference = IS_IN_DB(db, db.m_propinsi.id,'%(propinsi)s' )),
+    Field('id_propinsi', 'reference m_propinsi', 
+          requires=IS_IN_DB(db, db.m_propinsi.id, '%(id)s')),
     Field('kabupaten_kota', 'string'),
     Field('deleted', 'boolean', default=False)
     )
 
 db.define_table('m_kecamatan',
-    Field('id_kabupaten_kota', reference = IS_IN_DB(db, db.m_kabupaten_kota.id,'%(kabupaten_kota)s' )),
+    Field('id_kabupaten_kota', 'reference m_kabupaten_kota', 
+          requires=IS_IN_DB(db, db.m_kabupaten_kota.id, '%(id)s')),
     Field('kecamatan', 'string'),
     Field('deleted', 'boolean', default=False)
     )
 
 db.define_table('m_kelurahan_desa',
-    Field('id_kecamatan', reference = IS_IN_DB(db, db.m_kecamatan.id,'%(kecamatan)s' )),
+    Field('id_kecamatan', 'reference m_kecamatan', 
+          requires=IS_IN_DB(db, db.m_kecamatan.id, '%(id)s')),
     Field('kelurahan_desa', 'string'),
-    #Field('kode_pos', 'integer'),
     Field('deleted', 'boolean', default=False)
     )
+
 db.define_table('m_kodepos',
-    Field('id_kelurahan_desa', reference = IS_IN_DB(db, db.m_kelurahan_desa.id,'%(kelurahan_desa)s' )),
-    Field('id_kecamatan', reference = IS_IN_DB(db, db.m_kecamatan.id,'%(kecamatan)s' )),
-    Field('id_kabupaten_kota', reference = IS_IN_DB(db, db.m_kabupaten_kota.id,'%(kabupaten_kota)s' )),
-    Field('id_propinsi', reference = IS_IN_DB(db, db.m_propinsi.id,'%(propinsi)s' )),
+    Field('id_kelurahan_desa', 'reference m_kelurahan_desa', 
+          requires=IS_IN_DB(db, db.m_kelurahan_desa.id, '%(id)s')),
+    Field('id_kecamatan', 'reference m_kecamatan', 
+          requires=IS_IN_DB(db, db.m_kecamatan.id, '%(id)s')),
+    Field('id_kabupaten_kota', 'reference m_kabupaten_kota', 
+          requires=IS_IN_DB(db, db.m_kabupaten_kota.id, '%(id)s')),
+    Field('id_propinsi', 'reference m_propinsi', 
+          requires=IS_IN_DB(db, db.m_propinsi.id, '%(id)s')),
     Field('kode_pos', 'string'),
     Field('deleted', 'boolean', default=False)
     )
@@ -235,23 +241,6 @@ db.define_table('m_disdik',
     Field('deleted', 'boolean', default=False)    
     )
 
-db.define_table('map_disdik_sekolah',
-    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
-    Field('id_disdik', reference = IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s' )),
-    Field('time_stamp', 'datetime', default = request.now),
-    )
-
-db.define_table('map_sekolah_kepala',
-    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
-    Field('id_kepala_sekolah', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('time_stamp', 'datetime', default = request.now),
-    )
-
-db.define_table('map_admin_disdik',
-    Field('id_disdik', reference = IS_IN_DB(db, db.m_disdik.id,'%(nama_disdik)s' )),
-    Field('id_admin', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('time_stamp', 'datetime', default = request.now),
-    )
 
 db.define_table('m_supplier',
     Field('nama_supplier', 'string'),
@@ -265,12 +254,6 @@ db.define_table('m_supplier',
     Field('deleted', 'boolean', default=False),
     )
 
-db.define_table('map_supplier_user',
-    Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id,'%(nama_supplier)s' )),
-    Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
-    Field('time_stamp', 'datetime', default = request.now),
-    Field('deleted', 'boolean', default=False)    
-    )
 
 db.define_table('m_vendor',
     Field('nama_vendor', 'string'),
@@ -284,16 +267,53 @@ db.define_table('m_vendor',
     Field('deleted', 'boolean', default=False)
     )
 
+db.define_table('map_disdik_sekolah',
+    Field('id_sekolah', 'reference m_sekolah', 
+          requires=IS_IN_DB(db, db.m_sekolah.id, '%(nama_sekolah)s')),
+    Field('id_disdik', 'reference m_disdik', 
+          requires=IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s')),
+    Field('time_stamp', 'datetime', default=request.now),
+)
+
+db.define_table('map_sekolah_kepala',
+    Field('id_sekolah', 'reference m_sekolah', 
+          requires=IS_IN_DB(db, db.m_sekolah.id, '%(nama_sekolah)s')),
+    Field('id_kepala_sekolah', 'reference auth_user', 
+          requires=IS_IN_DB(db, db.auth_user.id, '%(first_name)s')),
+    Field('time_stamp', 'datetime', default=request.now),
+)
+
+db.define_table('map_admin_disdik',
+    Field('id_disdik', 'reference m_disdik', 
+          requires=IS_IN_DB(db, db.m_disdik.id, '%(nama_disdik)s')),
+    Field('id_admin', 'reference auth_user', 
+          requires=IS_IN_DB(db, db.auth_user.id, '%(first_name)s')),
+    Field('time_stamp', 'datetime', default=request.now),
+)
+
+db.define_table('map_supplier_user',
+    Field('id_supplier', 'reference m_supplier', 
+          requires=IS_IN_DB(db, db.m_supplier.id, '%(nama_supplier)s')),
+    Field('id_user', 'reference auth_user', 
+          requires=IS_IN_DB(db, db.auth_user.id, '%(first_name)s')),
+    Field('time_stamp', 'datetime', default=request.now),
+    Field('deleted', 'boolean', default=False),
+)
+
 db.define_table('map_vendor_user',
-    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
-    Field('id_user', reference = IS_IN_DB(db, db.auth_user.id,'%(first_name)s' )),
+    Field('id_vendor', 'reference m_vendor', 
+          requires=IS_IN_DB(db, db.m_vendor.id, '%(nama_vendor)s')),
+    Field('id_user', 'reference auth_user', 
+          requires=IS_IN_DB(db, db.auth_user.id, '%(first_name)s')),
     Field('time_stamp', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 
 db.define_table('map_vendor_sekolah',
-    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
-    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
+    Field('id_vendor', 'reference m_vendor', 
+          requires=IS_IN_DB(db, db.m_vendor.id, '%(nama_vendor)s')),
+    Field('id_sekolah', 'reference m_sekolah', 
+          requires=IS_IN_DB(db, db.m_sekolah.id, '%(nama_sekolah)s')),
     Field('time_stamp', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
@@ -318,7 +338,8 @@ db.define_table('m_satuan_supplier',
 #     )
 
 db.define_table('t_siswa',
-    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
+    Field('id_sekolah', 'reference m_sekolah', 
+          requires=IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
     Field('nama', 'string'),
     Field('tempat_lahir', 'string'),
     Field('tanggal_lahir','date'),
@@ -328,7 +349,8 @@ db.define_table('t_siswa',
     )
 
 db.define_table('t_periksa_siswa',
-    Field('id_siswa', reference = IS_IN_DB(db, db.t_siswa.id,'%(nama)s' )),
+    Field('id_siswa', 'reference t_siswa', 
+          requires=IS_IN_DB(db, db.t_siswa.id,'%(nama)s' )),
     Field('tinggi_badan', 'float'),
     Field('berat_badan', 'float'),
     Field('tanggal_pengukuran', 'date'),
@@ -337,34 +359,32 @@ db.define_table('t_periksa_siswa',
     )
 
 db.define_table('t_menu_supplier',
-    Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id, '%(nama_supplier)s' )),
+    Field('id_supplier', 'reference m_supplier', 
+          requires=IS_IN_DB(db, db.m_supplier.id, '%(nama_supplier)s' )),
     Field('nama_item', 'string'),
     Field('volume', 'integer'),
     Field('harga', 'integer'),
-    Field('id_satuan_supplier', reference = IS_IN_DB(db, db.m_satuan_supplier.id, '%(nama_satuan)s' )),
+    Field('id_satuan_supplier', 'reference m_satuan_supplier', 
+          requires=IS_IN_DB(db, db.m_satuan_supplier.id, '%(nama_satuan)s' )),
     Field('time_stamp', 'datetime', default = request.now),
     Field('deleted', 'boolean', default=False)
     )
 
 db.define_table('t_pembelian_bahan',
-    Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id,'%(nama_supplier)s' )),
-    Field('id_vendor', reference = IS_IN_DB(db, db.map_vendor_user.id,'%(id_vendor)s' )),
-    Field('nama_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
+    Field('id_supplier', 'reference m_supplier', 
+          requires=IS_IN_DB(db, db.m_supplier.id, '%(id)s')),
+    Field('id_vendor', 'reference m_vendor', 
+          requires=IS_IN_DB(db, db.m_vendor.id, '%(id)s')),
+    Field('nama_vendor', 'string'),
     Field('nama_item', 'string'),
     Field('volume', 'integer'),
-    Field('harga', 'integer', reference = IS_IN_DB(db, db.t_menu_supplier.id,'%(harga)s' )),
-    Field('id_satuan_supplier', reference = IS_IN_DB(db, db.m_satuan_supplier.id,'%(nama_satuan)s' )),
+    Field('harga', 'integer'),
+    Field('id_satuan_supplier', 'reference m_satuan_supplier', 
+          requires=IS_IN_DB(db, db.m_satuan_supplier.id, '%(id)s')),
     Field('time_stamp', 'datetime', default = request.now),
     Field('status', 'string', default="Diproses"),
     Field('deleted', 'boolean', default=False)
 )
-
-# db.define_table('t_paket_menu',
-#     Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_sekolah)s' )),
-#     Field('menu', 'string'),
-#     Field('id_m_satuan_menu', reference = IS_IN_DB(db, db.m_satuan_menu.id,'%(nama_satuan)s' )),
-#     Field('id_supplier', reference = IS_IN_DB(db, db.m_supplier.id,'%(nama_supplier)s' )),
-#     )
 
 #------------------------------------------------------------------------------------
 ## khusus disdik
@@ -404,12 +424,16 @@ db.define_table('t_kontrak_disdik',
 
 #-------------------------------------------------------------------------------------
 db.define_table('t_pengajuan_paket',
-    Field('id_vendor', reference = IS_IN_DB(db, db.m_vendor.id,'%(nama_vendor)s' )),
-    Field('id_disdik', reference = IS_IN_DB(db, db.m_disdik.id,'%(nama_disdik)s' )),
-    Field('id_sekolah', reference = IS_IN_DB(db, db.m_sekolah.id,'%(nama_sekolah)s' )),
-    Field('id_paket', reference = IS_IN_DB(db, db.m_paket.id,'%(nama_paket)s' )),
+    Field('id_vendor', 'reference m_vendor', 
+          requires=IS_IN_DB(db, db.m_vendor.id, '%(id)s')),
+    Field('id_disdik', 'reference m_disdik', 
+          requires=IS_IN_DB(db, db.m_disdik.id, '%(id)s')),
+    Field('id_sekolah', 'reference m_sekolah', 
+          requires=IS_IN_DB(db, db.m_sekolah.id, '%(id)s')),
+    Field('id_paket', 'reference m_paket', 
+          requires=IS_IN_DB(db, db.m_paket.id, '%(id)s')),
     Field('jumlah', 'integer'),
-    Field('jenis_paket', reference = IS_IN_DB(db, db.t_kontrak_disdik.jenis_paket,'%(jenis_paket)s' )),
+    Field('jenis_paket', 'string'),
     Field('approve', 'boolean', default=None),
     Field('time_stamp_update', 'datetime', default=None),
     Field('time_stamp_dibuat', 'datetime', default = request.now),
@@ -440,15 +464,16 @@ db.define_table('t_pengajuan_paket',
 
 
 db.define_table('t_status_paket',
-    Field('id_t_pengajuan_paket', reference = IS_IN_DB(db, db.t_pengajuan_paket.id,'%(id)s' )),
+    Field('id_t_pengajuan_paket', 'reference t_pengajuan_paket', 
+          requires=IS_IN_DB(db, db.t_pengajuan_paket.id,'%(id)s' )),
     Field('id_disdik', 'reference m_disdik', 
-          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_disdik, '%(id_disdik)s')),
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_disdik, '%(id)s')),
     Field('id_sekolah', 'reference m_sekolah',
-          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_sekolah, '%(id_sekolah)s')),
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_sekolah, '%(id)s')),
     Field('id_paket', 'reference m_paket',
-          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_paket, '%(id_paket)s')),
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_paket, '%(id)s')),
     Field('id_vendor', 'reference m_vendor', 
-          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_vendor, '%(id_vendor)s')),
+          requires= IS_IN_DB(db, db.t_pengajuan_paket.id_vendor, '%(id)s')),
     Field('status', 'string'),
     Field('ts_dibuat', 'datetime', default = request.now),
     Field('ts_diproses_ditolak', 'datetime', default=None),

@@ -1,0 +1,9 @@
+id,first_name,last_name,email,password,registration_key,reset_password_key,registration_id
+1,Super,Admin,super_admin@local.test,"pbkdf2(1000,20,sha512)$b76379fcdb6c64fe$eb186117f80674445bcc82b311bbd0e162c42021",,,
+2,Kepala,Sekolah,kepala_sekolah@local.test,"pbkdf2(1000,20,sha512)$a1fb6978420df434$d45ba4219b9a019445954a181f574142bf66ab14",,,
+3,Disdik,Regional,disdik@local.test,"pbkdf2(1000,20,sha512)$a6c8fc473a483d22$d1cc40a5d4a1507cc5ee28329d3c340ec57e6fd0",,,
+4,Supplier,1,supplier1@local.test,"pbkdf2(1000,20,sha512)$9244511c609bc46b$bde71475f3d50638dd3e3f8cba9d65bec2b96628",,,
+5,Vendor,1,vendor1@local.test,"pbkdf2(1000,20,sha512)$8180605cbce3e195$49a07ab1b61b7047315cf37b10292f7c7b4b15d0",,,
+6,Vendor,2,vendor2@local.test,"pbkdf2(1000,20,sha512)$99e64f6e402eeab6$5a1030503b4e1941489a7db39d52a2aa69b95ede",,,
+7,Supplier,2,supplier2@local.test,"pbkdf2(1000,20,sha512)$835161adec10ee37$b98381aba2a51a77e113b7083ad4d12521f9d754",,,
+8,aa,bb,aa@ss.ss,"pbkdf2(1000,20,sha512)$a1efca98e2949b37$a2199cdfbe57335759f03e332b7b3ab5c4ad0594",pending,,

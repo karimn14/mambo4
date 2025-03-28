@@ -1,0 +1,5 @@
+id,nama_supplier,alamat,id_kelurahan_desa,time_stamp,deleted,id_kode_pos
+1,Supplier 1,Ibrahim Adjie,25550,2025-01-17 10:55:32,F,25560
+2,Supplier 2,Jl Korawa,29099,2025-01-17 10:55:32,F,29109
+3,Supplier 3,Jl Siliwangi,25363,2025-01-17 10:55:32,F,25373
+4,Supplier 4,Ciraja Girang,28567,2025-01-17 10:55:32,F,28577

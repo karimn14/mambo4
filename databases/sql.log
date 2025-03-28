@@ -462,3 +462,633 @@ success!
 DELETE FROM "t_pengajuan_paket";
 DELETE FROM sqlite_sequence WHERE name='t_pengajuan_paket'
 success!
+timestamp: 2025-03-27T15:59:02.261708
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:01:17.596786
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:05:26.047673
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:09:35.861156
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:10:29.658218
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:11:16.436521
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:12:03.058029
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:15:10.275875
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:21:32.931857
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-27T16:23:20.546382
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-28T05:12:50.497181
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-28T07:04:03.101614
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-28T07:09:48.056180
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2025-03-28T07:11:18.738892
+CREATE TABLE `auth_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `first_name` VARCHAR(128),
+    `last_name` VARCHAR(128),
+    `email` VARCHAR(512),
+    `password` VARCHAR(512),
+    `registration_key` VARCHAR(512),
+    `reset_password_key` VARCHAR(512),
+    `registration_id` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.750898
+CREATE TABLE `auth_group`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `role` VARCHAR(512),
+    `description` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.755898
+CREATE TABLE `auth_membership`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `user_id` INT  , INDEX `user_id__idx` (`user_id`), FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+    `group_id` INT  , INDEX `group_id__idx` (`group_id`), FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`) ON DELETE CASCADE,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.766906
+CREATE TABLE `auth_permission`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `group_id` INT  , INDEX `group_id__idx` (`group_id`), FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`) ON DELETE CASCADE,
+    `name` VARCHAR(512),
+    `table_name` VARCHAR(512),
+    `record_id` INTEGER,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.778906
+CREATE TABLE `auth_event`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `time_stamp` DATETIME,
+    `client_ip` VARCHAR(512),
+    `user_id` INT  , INDEX `user_id__idx` (`user_id`), FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+    `origin` VARCHAR(512),
+    `description` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.786909
+CREATE TABLE `auth_cas`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `user_id` INT  , INDEX `user_id__idx` (`user_id`), FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE,
+    `created_on` DATETIME,
+    `service` VARCHAR(512),
+    `ticket` VARCHAR(512),
+    `renew` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.799913
+CREATE TABLE `m_propinsi`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `propinsi` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.805912
+CREATE TABLE `m_kabupaten_kota`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_propinsi` VARCHAR(512),
+    `kabupaten_kota` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.815917
+CREATE TABLE `m_kecamatan`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_kabupaten_kota` VARCHAR(512),
+    `kecamatan` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.819915
+CREATE TABLE `m_kelurahan_desa`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_kecamatan` VARCHAR(512),
+    `kelurahan_desa` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.884933
+CREATE TABLE `m_kodepos`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_kelurahan_desa` VARCHAR(512),
+    `id_kecamatan` VARCHAR(512),
+    `id_kabupaten_kota` VARCHAR(512),
+    `id_propinsi` VARCHAR(512),
+    `kode_pos` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.895940
+CREATE TABLE `m_paket`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_vendor` INTEGER,
+    `nama_paket` VARCHAR(512),
+    `pagu_harga` INTEGER,
+    `kalori` FLOAT,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.901937
+CREATE TABLE `m_sekolah`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_sekolah` VARCHAR(512),
+    `alamat` VARCHAR(512),
+    `id_kelurahan_desa` INT  , INDEX `id_kelurahan_desa__idx` (`id_kelurahan_desa`), FOREIGN KEY (`id_kelurahan_desa`) REFERENCES `m_kelurahan_desa` (`id`) ON DELETE CASCADE,
+    `id_kode_pos` INT  , INDEX `id_kode_pos__idx` (`id_kode_pos`), FOREIGN KEY (`id_kode_pos`) REFERENCES `m_kodepos` (`id`) ON DELETE CASCADE,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.911943
+CREATE TABLE `m_disdik`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_disdik` VARCHAR(512),
+    `alamat` VARCHAR(512),
+    `id_kelurahan_desa` INT  , INDEX `id_kelurahan_desa__idx` (`id_kelurahan_desa`), FOREIGN KEY (`id_kelurahan_desa`) REFERENCES `m_kelurahan_desa` (`id`) ON DELETE CASCADE,
+    `id_kode_pos` INT  , INDEX `id_kode_pos__idx` (`id_kode_pos`), FOREIGN KEY (`id_kode_pos`) REFERENCES `m_kodepos` (`id`) ON DELETE CASCADE,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.938945
+CREATE TABLE `map_disdik_sekolah`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_sekolah` VARCHAR(512),
+    `id_disdik` VARCHAR(512),
+    `time_stamp` DATETIME,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.947950
+CREATE TABLE `map_sekolah_kepala`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_sekolah` VARCHAR(512),
+    `id_kepala_sekolah` VARCHAR(512),
+    `time_stamp` DATETIME,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:18.952950
+CREATE TABLE `map_admin_disdik`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_disdik` VARCHAR(512),
+    `id_admin` VARCHAR(512),
+    `time_stamp` DATETIME,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.017966
+CREATE TABLE `m_supplier`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_supplier` VARCHAR(512),
+    `alamat` VARCHAR(512),
+    `id_kelurahan_desa` INT  , INDEX `id_kelurahan_desa__idx` (`id_kelurahan_desa`), FOREIGN KEY (`id_kelurahan_desa`) REFERENCES `m_kelurahan_desa` (`id`) ON DELETE CASCADE,
+    `id_kode_pos` INT  , INDEX `id_kode_pos__idx` (`id_kode_pos`), FOREIGN KEY (`id_kode_pos`) REFERENCES `m_kodepos` (`id`) ON DELETE CASCADE,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.049976
+CREATE TABLE `map_supplier_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_supplier` VARCHAR(512),
+    `id_user` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.061982
+CREATE TABLE `m_vendor`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_vendor` VARCHAR(512),
+    `alamat` VARCHAR(512),
+    `id_kelurahan_desa` INT  , INDEX `id_kelurahan_desa__idx` (`id_kelurahan_desa`), FOREIGN KEY (`id_kelurahan_desa`) REFERENCES `m_kelurahan_desa` (`id`) ON DELETE CASCADE,
+    `id_kode_pos` INT  , INDEX `id_kode_pos__idx` (`id_kode_pos`), FOREIGN KEY (`id_kode_pos`) REFERENCES `m_kodepos` (`id`) ON DELETE CASCADE,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.067979
+CREATE TABLE `map_vendor_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_vendor` VARCHAR(512),
+    `id_user` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.071982
+CREATE TABLE `map_vendor_sekolah`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_vendor` VARCHAR(512),
+    `id_sekolah` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.084985
+CREATE TABLE `m_satuan_menu`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_satuan` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.094988
+CREATE TABLE `m_satuan_supplier`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `nama_satuan` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.104987
+CREATE TABLE `t_siswa`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_sekolah` VARCHAR(512),
+    `nama` VARCHAR(512),
+    `tempat_lahir` VARCHAR(512),
+    `tanggal_lahir` DATE,
+    `jenis_kelamin` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.120991
+CREATE TABLE `t_periksa_siswa`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_siswa` VARCHAR(512),
+    `tinggi_badan` FLOAT,
+    `berat_badan` FLOAT,
+    `tanggal_pengukuran` DATE,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.152002
+CREATE TABLE `t_menu_supplier`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_supplier` VARCHAR(512),
+    `nama_item` VARCHAR(512),
+    `volume` INTEGER,
+    `harga` INTEGER,
+    `id_satuan_supplier` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.195011
+CREATE TABLE `t_pembelian_bahan`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_supplier` VARCHAR(512),
+    `id_vendor` VARCHAR(512),
+    `nama_vendor` VARCHAR(512),
+    `nama_item` VARCHAR(512),
+    `volume` INTEGER,
+    `harga` INTEGER,
+    `id_satuan_supplier` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `status` VARCHAR(512),
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.204014
+CREATE TABLE `t_kontrak_disdik`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_disdik` INT  , INDEX `id_disdik__idx` (`id_disdik`), FOREIGN KEY (`id_disdik`) REFERENCES `m_disdik` (`id`) ON DELETE CASCADE,
+    `id_sekolah` INT  , INDEX `id_sekolah__idx` (`id_sekolah`), FOREIGN KEY (`id_sekolah`) REFERENCES `m_sekolah` (`id`) ON DELETE CASCADE,
+    `id_paket` INT  , INDEX `id_paket__idx` (`id_paket`), FOREIGN KEY (`id_paket`) REFERENCES `m_paket` (`id`) ON DELETE CASCADE,
+    `id_vendor` INT  , INDEX `id_vendor__idx` (`id_vendor`), FOREIGN KEY (`id_vendor`) REFERENCES `m_vendor` (`id`) ON DELETE CASCADE,
+    `nama` VARCHAR(512),
+    `nip_npwp` VARCHAR(512),
+    `jabatan` VARCHAR(512),
+    `alamat` VARCHAR(512),
+    `instansi` VARCHAR(512),
+    `jenis_paket` VARCHAR(512),
+    `jumlah_kalori` FLOAT,
+    `jumlah_paket_per_hari` INTEGER,
+    `tanggal_mulai` DATE,
+    `tanggal_selesai` DATE,
+    `durasi` INTEGER,
+    `total_biaya_kontrak` INTEGER,
+    `bukti_kontrak` VARCHAR(512),
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.215016
+CREATE TABLE `t_pengajuan_paket`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_vendor` VARCHAR(512),
+    `id_disdik` VARCHAR(512),
+    `id_sekolah` VARCHAR(512),
+    `id_paket` VARCHAR(512),
+    `jumlah` INTEGER,
+    `jenis_paket` VARCHAR(512),
+    `approve` CHAR(1),
+    `time_stamp_update` DATETIME,
+    `time_stamp_dibuat` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.220018
+CREATE TABLE `t_status_paket`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `id_t_pengajuan_paket` VARCHAR(512),
+    `id_disdik` INT  , INDEX `id_disdik__idx` (`id_disdik`), FOREIGN KEY (`id_disdik`) REFERENCES `m_disdik` (`id`) ON DELETE CASCADE,
+    `id_sekolah` INT  , INDEX `id_sekolah__idx` (`id_sekolah`), FOREIGN KEY (`id_sekolah`) REFERENCES `m_sekolah` (`id`) ON DELETE CASCADE,
+    `id_paket` INT  , INDEX `id_paket__idx` (`id_paket`), FOREIGN KEY (`id_paket`) REFERENCES `m_paket` (`id`) ON DELETE CASCADE,
+    `id_vendor` INT  , INDEX `id_vendor__idx` (`id_vendor`), FOREIGN KEY (`id_vendor`) REFERENCES `m_vendor` (`id`) ON DELETE CASCADE,
+    `status` VARCHAR(512),
+    `ts_dibuat` DATETIME,
+    `ts_diproses_ditolak` DATETIME,
+    `ts_dikirim` DATETIME,
+    `ts_diterima` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.470078
+CREATE TABLE `t_keluhan_user`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `keluhan` LONGTEXT,
+    `time_stamp` DATETIME,
+    `deleted` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.705145
+CREATE TABLE `scheduler_task`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `application_name` VARCHAR(512),
+    `task_name` VARCHAR(512),
+    `group_name` VARCHAR(512),
+    `status` VARCHAR(512),
+    `broadcast` CHAR(1),
+    `function_name` VARCHAR(512),
+    `uuid` VARCHAR(255) UNIQUE,
+    `args` LONGTEXT,
+    `vars` LONGTEXT,
+    `enabled` CHAR(1),
+    `start_time` DATETIME,
+    `next_run_time` DATETIME,
+    `stop_time` DATETIME,
+    `repeats` INTEGER,
+    `retry_failed` INTEGER,
+    `period` INTEGER,
+    `prevent_drift` CHAR(1),
+    `cronline` VARCHAR(512),
+    `timeout` INTEGER,
+    `sync_output` INTEGER,
+    `times_run` INTEGER,
+    `times_failed` INTEGER,
+    `last_run_time` DATETIME,
+    `assigned_worker_name` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.714141
+CREATE TABLE `scheduler_run`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `task_id` INT  , INDEX `task_id__idx` (`task_id`), FOREIGN KEY (`task_id`) REFERENCES `scheduler_task` (`id`) ON DELETE CASCADE,
+    `status` VARCHAR(512),
+    `start_time` DATETIME,
+    `stop_time` DATETIME,
+    `run_output` LONGTEXT,
+    `run_result` LONGTEXT,
+    `traceback` LONGTEXT,
+    `worker_name` VARCHAR(512),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.722145
+CREATE TABLE `scheduler_worker`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `worker_name` VARCHAR(255) UNIQUE,
+    `first_heartbeat` DATETIME,
+    `last_heartbeat` DATETIME,
+    `status` VARCHAR(512),
+    `is_ticker` CHAR(1),
+    `group_names` LONGTEXT,
+    `worker_stats` LONGTEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+timestamp: 2025-03-28T07:11:19.756154
+CREATE TABLE `scheduler_task_deps`(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `job_name` VARCHAR(512),
+    `task_parent` INTEGER,
+    `task_child` INT  , INDEX `task_child__idx` (`task_child`), FOREIGN KEY (`task_child`) REFERENCES `scheduler_task` (`id`) ON DELETE CASCADE,
+    `can_visit` CHAR(1),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARACTER SET utf8;
+faked!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+timestamp: 2025-03-28T07:48:35.405739
+ALTER TABLE `t_pembelian_bahan` ADD `nama_vendor__tmp` VARCHAR(512);
+success!
+UPDATE `t_pembelian_bahan` SET `nama_vendor__tmp`=`nama_vendor`;
+success!
+ALTER TABLE `t_pembelian_bahan` DROP COLUMN `nama_vendor`;
+success!
+ALTER TABLE `t_pembelian_bahan` ADD `nama_vendor` VARCHAR(512);
+success!
+UPDATE `t_pembelian_bahan` SET `nama_vendor`=`nama_vendor__tmp`;
+success!
+ALTER TABLE `t_pembelian_bahan` DROP COLUMN `nama_vendor__tmp`;
+success!
+success!
+timestamp: 2025-03-28T07:48:37.445246
+ALTER TABLE `t_pengajuan_paket` ADD `jenis_paket__tmp` VARCHAR(512);
+success!
+UPDATE `t_pengajuan_paket` SET `jenis_paket__tmp`=`jenis_paket`;
+success!
+ALTER TABLE `t_pengajuan_paket` DROP COLUMN `jenis_paket`;
+success!
+ALTER TABLE `t_pengajuan_paket` ADD `jenis_paket` VARCHAR(512);
+success!
+UPDATE `t_pengajuan_paket` SET `jenis_paket`=`jenis_paket__tmp`;
+success!
+ALTER TABLE `t_pengajuan_paket` DROP COLUMN `jenis_paket__tmp`;
+success!
+success!

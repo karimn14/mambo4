@@ -337,19 +337,13 @@ def pengajuan_paket():
 
 def get_kepsek_id(t_id=None):
     # Fetch kepala sekolah data
-    kepsek_data = db((db.map_sekolah_kepala.id_kepala_sekolah == db.auth_user.id) & 
-                     (db.map_sekolah_kepala.id_sekolah == db.m_sekolah.id) & 
-                     (db.auth_user.id == t_id)).select().first()
+    kepsek_data = db(db.map_sekolah_kepala.id_kepala_sekolah == t_id).select().first()
     
     if not kepsek_data:
-        return dict(error="Kepsek not found")
+        return "Tidak ditemukan sekolah kepsek"  # Return None if no data is found
 
-    # Ensure id_kepsek is valid
-    if not kepsek_data.m_sekolah.id:
-        return dict(error="Invalid school ID for kepsek")
-
-    id_kepsek = kepsek_data.m_sekolah.id
-    return id_kepsek
+    # Return only the id_sekolah value
+    return kepsek_data.id_sekolah
 
 @request.restful()
 @cors_allow
@@ -546,7 +540,7 @@ def periksa_siswa():
         db.t_periksa_siswa.insert(id_siswa=request.vars.id_siswa,
                                     berat_badan=request.vars.berat_badan,
                                   tinggi_badan=request.vars.tinggi_badan, 
-                                  tangga_pengukuran=request.vars.tangga_pengukuran,)
+                                  tanggal_pengukuran=request.vars.tanggal_pengukuran,)
         id_record = db(db.t_periksa_siswa.id_siswa == request.vars.id_siswa).select().last().id
         return dict(res='ok', id_record = id_record)
 
@@ -640,16 +634,15 @@ def terima_paket():
 
 # CEK VENDOR
 def get_vendor_id(t_id=None):
-    #Langsung ambil data vendor dari database, bukan dari API cek_vendor
+    # Fetch vendor data from the database
     vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
-                    (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
-                    (db.auth_user.id == t_id)).select().first()
+                     (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
+                     (db.auth_user.id == t_id)).select().first()
 
     if not vendor_data:
-       return dict(error="Vendor not found")
+        raise HTTP(400, "Vendor not found")  # Raise an error if vendor is not found
 
-    id_vendor = vendor_data.m_vendor.id
-    return id_vendor
+    return vendor_data.m_vendor.id  # Return the vendor ID as an integer
 
 @request.restful()
 @cors_allow
@@ -720,11 +713,25 @@ def vendor_paket():
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+            
+        id_vendor = int(get_vendor_id(request.vars.id_user))
+        if not isinstance(id_vendor, int):
+            raise HTTP(400, "Invalid id_vendor format. Must be an integer.")
         
-        id_vendor = get_vendor_id(request.vars.id_user)
+        # Validate data types and constraints
+        try:
+            pagu_harga = float(request.vars.pagu_harga)
+            kalori = float(request.vars.kalori)
+        except ValueError:
+            raise HTTP(400, "Invalid data type for 'pagu_harga' or 'kalori'")
+        
         if not db(db.m_paket.nama_paket == request.vars.nama_paket).select().first():
-            db.m_paket.insert(id_vendor=id_vendor, nama_paket=request.vars.nama_paket, 
-                              pagu_harga=request.vars.pagu_harga, kalori=request.vars.kalori)
+            db.m_paket.insert(
+                id_vendor=id_vendor,
+                nama_paket=request.vars.nama_paket,
+                pagu_harga=pagu_harga,
+                kalori=kalori
+            )
         else:
             return dict(error="Product already exists")
 
@@ -1136,6 +1143,16 @@ def keluhan_user():
 #------------------------------------------------------------------------------------
 ## untuk debug
 #------------------------------------------------------------------------------------
+
+@request.restful()
+@cors_allow
+def debug_akun():
+    response.view = 'generic.json'
+    def GET(*args, **vars):
+        # Fetch all user data from the database
+        users = db(db.auth_user).select().as_list()
+        return dict(users=users)
+    return locals()
 
 @request.restful()
 @cors_allow
