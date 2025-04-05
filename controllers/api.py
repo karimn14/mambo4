@@ -108,35 +108,6 @@ def status_paket():
 #------------------------------------------------------------------------------------
 ## untuk disdik
 #------------------------------------------------------------------------------------
-#Added: Arga 15-02-2025
-def f_cek_id_disdik(t_id):
-    disdik_saya = []
-    id_disdik=None
-    nama_disdik = 'Disdik Debug'
-
-    if t_id!=None:
-        disdik_saya = db((db.map_admin_disdik.id_admin == db.auth_user.id) & 
-            (db.map_admin_disdik.id_disdik==db.m_disdik.id)& 
-            (db.auth_user.id == t_id)).select().as_list()
-    else:
-       id_user=dict(id=3, first_name='Disdik', last_name='Regional') 
-
-
-    if len(disdik_saya)==1:
-        id_disdik = disdik_saya[0]['m_disdik']['id']
-        nama_disdik = disdik_saya[0]['m_disdik']['nama_disdik']
-        id_kelurahan_desa=disdik_saya[0]['m_disdik']['id_kelurahan_desa']
-        id_kode_pos=disdik_saya[0]['m_disdik']['id_kode_pos']
-        id_user=dict(id=disdik_saya[0]['auth_user']['id'], first_name=disdik_saya[0]['auth_user']['first_name'], 
-            last_name=disdik_saya[0]['auth_user']['last_name'])        
-    else:
-        id_disdik=1
-        nama_disdik = 'Disdik Debug'
-        id_kelurahan_desa=0
-        id_kode_pos=0
-        id_user=dict(id=3, first_name='Disdik', last_name='Regional') 
-    return dict(id_disdik=id_disdik, nama_disdik=nama_disdik, id_kelurahan_desa =id_kelurahan_desa, 
-        id_kode_pos=id_kode_pos, user=id_user)
 
 ##### Untuk ke web:
 #Added: Arga 15-02-2025
@@ -195,19 +166,12 @@ def data_penerimaan_paket_dari_kepsek():
 #disdik auth_user.id_user=3
 def get_disdik_id(t_id=None):
     # Fetch disdik data
-    disdik_data = db((db.map_admin_disdik.id_admin == db.auth_user.id) & 
-                     (db.map_admin_disdik.id_disdik == db.m_disdik.id) & 
-                     (db.auth_user.id == t_id)).select().first()
+    disdik_data = db((db.map_admin_disdik.id_admin == t_id)).select().first()
     
     if not disdik_data:
-        return dict(error="Disdik not found")
+        raise ValueError("Disdik not found or invalid Disdik ID")
 
-    # Ensure id_disdik is valid
-    if not disdik_data.m_disdik.id:
-        return dict(error="Invalid Disdik ID")
-
-    id_disdik = disdik_data.m_disdik.id
-    return id_disdik
+    return disdik_data.id_disdik
 
 @request.restful()
 @cors_allow
@@ -226,7 +190,6 @@ def disdik_kontrak():
     response.view = 'generic.json'
 
     def GET(*args, **vars):
-
         db_now = db(db.t_kontrak_disdik).select().as_list()
         return dict(kontrak=db_now)
 
@@ -255,7 +218,11 @@ def disdik_kontrak():
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
 
-        id_disdik = get_disdik_id(request.vars.id_user)
+        try:
+            id_disdik = get_disdik_id(request.vars.id_user)
+            return dict(res=id_disdik)
+        except ValueError as e:
+            raise HTTP(400, str(e))
 
         # Convert date strings to date objects.
         from datetime import datetime
@@ -539,7 +506,7 @@ def periksa_siswa():
 
         db.t_periksa_siswa.insert(id_siswa=request.vars.id_siswa,
                                     berat_badan=request.vars.berat_badan,
-                                  tinggi_badan=request.vars.tinggi_badan, 
+                                  tinggi_badan = request.vars.tinggi_badan, 
                                   tanggal_pengukuran=request.vars.tanggal_pengukuran,)
         id_record = db(db.t_periksa_siswa.id_siswa == request.vars.id_siswa).select().last().id
         return dict(res='ok', id_record = id_record)
@@ -635,14 +602,12 @@ def terima_paket():
 # CEK VENDOR
 def get_vendor_id(t_id=None):
     # Fetch vendor data from the database
-    vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
-                     (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
-                     (db.auth_user.id == t_id)).select().first()
+    vendor_data = db((db.map_vendor_user.id_user == t_id)).select().first()
 
     if not vendor_data:
-        raise HTTP(400, "Vendor not found")  # Raise an error if vendor is not found
+        return "Vendor not found"  # Raise an error if vendor is not found
 
-    return vendor_data.m_vendor.id  # Return the vendor ID as an integer
+    return vendor_data.id_vendor  # Return the vendor ID as an integer
 
 @request.restful()
 @cors_allow
@@ -734,7 +699,7 @@ def vendor_paket():
             )
         else:
             return dict(error="Product already exists")
-
+        db.commit()
         return dict(res='ok')
 
     def PUT(*args, **vars):
@@ -796,15 +761,6 @@ def vendor_pesan_supplier():
         missing_vars = [var for var in required_vars if not request.vars.get(var)]
         if missing_vars:
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
-
-        vendor_data = db((db.map_vendor_user.id_user == db.auth_user.id) & 
-                    (db.map_vendor_user.id_vendor == db.m_vendor.id) & 
-                    (db.auth_user.id == request.vars.id_user)).select().first()
-
-        if not vendor_data:
-            return dict(error="Vendor not found")
-
-        nama_vendor = vendor_data.m_vendor.nama_vendor
         
         id_vendor = get_vendor_id(request.vars.id_user)
 
@@ -946,14 +902,12 @@ def terima_pengajuan():
 #id_user : 7 for id_supplier : 2
 def get_supplier_id(t_id=None):
     #Langsung ambil data vendor dari database, bukan dari API cek_vendor
-    supplier_data = db((db.map_supplier_user.id_user == db.auth_user.id) & 
-                    (db.map_supplier_user.id_supplier == db.m_supplier.id) & 
-                    (db.auth_user.id == t_id)).select().first()
+    supplier_data = db((db.map_supplier_user.id_user == t_id)).select().first()
 
     if not supplier_data:
        return dict(error="Supplier not found")
 
-    id_supplier = supplier_data.m_supplier.id
+    id_supplier = supplier_data.id_supplier
     return id_supplier
 
 @request.restful()
