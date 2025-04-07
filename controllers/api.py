@@ -52,42 +52,69 @@ sys.path.append(r"C:\Users\Windows 10\AppData\Local\Packages\PythonSoftwareFound
 #     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 #     return encoded_jwt
 
-@request.restful()
-@cors_allow
-def login():
-    response.view = 'generic.json'
-    def POST(*args, **vars):
-        email = request.vars.email
-        password = request.vars.password
-        user = authenticate_user(email, password)
-        if not user:
-            return dict(error="Incorrect email or password")
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            data={"sub": user.username}, expires_delta=access_token_expires
-        )
-        return dict(access_token=access_token, token_type="bearer")
-    return locals()
+# @request.restful()
+# @cors_allow
+# def login():
+#     response.view = 'generic.json'
+#     def POST(*args, **vars):
+#         email = request.vars.email
+#         password = request.vars.password
+#         user = authenticate_user(email, password)
+#         if not user:
+#             return dict(error="Incorrect email or password")
+#         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+#         access_token = create_access_token(
+#             data={"sub": user.username}, expires_delta=access_token_expires
+#         )
+#         return dict(access_token=access_token, token_type="bearer")
+#     return locals()
 
 #------------------------------------------------------------------------------------
 ## barre login
 @request.restful()
 @cors_allow
-def api_login():
+def bare_login():
     response.view = 'generic.json'
     def GET(*args, **vars):        
         u_name = request.vars.u
         pw = request.vars.pw
-        test = auth.login_bare(u_name,pw)
-        if test!=False:
-            #sanitize data
-            role = db((db.auth_membership.user_id==test['id'])&(db.auth_membership.group_id==db.auth_group.id)).select().as_list()
+        test = auth.login_bare(u_name, pw)
+        if test != False:
+            # Sanitize data
+            role = db((db.auth_membership.user_id == test['id']) &
+                      (db.auth_membership.group_id == db.auth_group.id)).select().as_list()
             test.pop('password')
             test.pop('reset_password_key')
             test.pop('registration_key')
             test.pop('registration_id')
-            test['role']=role[0]['auth_group']['role']
-        return dict(status=test)        
+            test['role'] = role[0]['auth_group']['role']
+            response.status = 200
+            return dict(status="success", message="Login successful", data=test)
+        else:
+            response.status = 401
+            return dict(status="fail", message="Invalid username or password")
+    return locals()
+
+@request.restful()
+@cors_allow
+def reset_password():
+    response.view = 'generic.json'
+    def POST(*args, **vars):
+        required_vars = ['email', 'new_password']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        email = request.vars.email
+        new_password = request.vars.new_password
+        # Fetch user by email
+        user = db(db.auth_user.email == email).select().first()
+        if not user:
+            return dict(error="User not found")
+        # Update password
+        hashed_password = db.auth_user.password.validate(new_password)[0]
+        user.update_record(password=hashed_password)
+        db.commit()
+        return dict(res="Password reset successful")
     return locals()
 
 #------------------------------------------------------------------------------------
@@ -106,62 +133,90 @@ def status_paket():
     return locals()
 
 #------------------------------------------------------------------------------------
-## untuk disdik
+## untuk master admin
 #------------------------------------------------------------------------------------
 
-##### Untuk ke web:
-#Added: Arga 15-02-2025
 @request.restful()
 @cors_allow
-def data_penerimaan_paket_dari_kepsek():
-
+def data_sekolah():
     response.view = 'generic.json'
+
     def GET(*args, **vars):
-        if request.vars.id_user==None:
-            raise HTTP(400)
-        profil = f_cek_id_disdik(request.vars.id_user)
-        #cari sekolahan dibawah disdik saya:
-        list_sekolah = db(db.map_disdik_sekolah.id_disdik==profil['id_disdik']).select().as_list()
-        
-        paket_sekolah_sekolah=[]
-        print("-------------------------------------------")
-        for l in list_sekolah:
-            ps = db(
-                (db.t_pemberian_paket.id_paket == db.m_paket.id) &
-                (db.t_pemberian_paket.id_tujuan == l['id_sekolah']) &
-                (db.t_pemberian_paket.id == db.t_tanda_terima_paket.id_t_pemberian_paket) &
-                #(db.t_pemberian_paket.tanggal_pengiriman_dari_vendor != None) &
-                (db.t_pemberian_paket.deleted == False)
-                ).select().as_list()
-            for p in ps:
-                #sanitizing response:
-                p['t_pemberian_paket'].pop('time_stamp')
-                p['t_pemberian_paket'].pop('id_vendor')
-                p['t_pemberian_paket'].pop('id_paket')
-                p['t_pemberian_paket'].pop('deleted')
-                p['t_tanda_terima_paket'].pop('time_stamp')
-                p['t_tanda_terima_paket'].pop('deleted')
-                p['m_paket'].pop('time_stamp')
-                p['m_paket'].pop('deleted')
+        # Fetch all schools or a specific school by ID
+        if request.vars.id:
+            try:
+                school_id = int(request.vars.id)
+                school = db(db.m_sekolah.id == school_id).select().first()
+                if not school:
+                    return dict(error="School not found")
+                return dict(school=school.as_dict())
+            except ValueError:
+                return dict(error="Invalid school ID format")
+        else:
+            schools = db(db.m_sekolah).select().as_list()
+            return dict(schools=schools)
 
+    def POST(*args, **vars):
+        # Add a new school
+        required_vars = ['nama_sekolah', 'alamat', 'id_kelurahan_desa', 'id_kode_pos']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
 
-            sek = db(db.m_sekolah.id==l['id_sekolah']).select().as_list()
-            if len(sek)==1:
-                kep=dict(first_name=None, last_name=None)
-                kepsek = db((db.map_sekolah_kepala.id_sekolah == l['id_sekolah'])&
-                    (db.map_sekolah_kepala.id_kepala_sekolah == db.auth_user.id)
-                    ).select().as_list()
-                if len(kepsek)==1:
-                    kep['first_name']=kepsek[0]['auth_user']['first_name']
-                    kep['last_name']=kepsek[0]['auth_user']['last_name']
-                #sanitizing response:
-                sek[0].pop('time_stamp')
-                sek[0].pop('deleted')
-                rr = dict(sekolah = sek[0], paket=ps, kepala_sekolah = kep)
+        new_school_id = db.m_sekolah.insert(
+            nama_sekolah=request.vars.nama_sekolah,
+            alamat=request.vars.alamat,
+            id_kelurahan_desa=request.vars.id_kelurahan_desa,
+            id_kode_pos=request.vars.id_kode_pos
+        )
+        return dict(res='ok', id=new_school_id)
 
-                paket_sekolah_sekolah.append(rr)
-        return dict(test = paket_sekolah_sekolah)
-    return locals()    
+    def PUT(*args, **vars):
+        # Update an existing school
+        required_vars = ['id', 'nama_sekolah', 'alamat', 'id_kelurahan_desa', 'id_kode_pos']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+
+        try:
+            school_id = int(request.vars.id)
+        except ValueError:
+            return dict(error="Invalid school ID format")
+
+        db_now = db(db.m_sekolah.id == school_id)
+        if not db_now.select().first():
+            return dict(error="School not found")
+
+        db_now.update(
+            nama_sekolah=request.vars.nama_sekolah,
+            alamat=request.vars.alamat,
+            id_kelurahan_desa=request.vars.id_kelurahan_desa,
+            id_kode_pos=request.vars.id_kode_pos
+        )
+        return dict(res='ok', id_update=school_id)
+
+    def DELETE(*args, **vars):
+        # Delete a school
+        if not request.vars.id:
+            raise HTTP(400, "Missing school ID")
+
+        try:
+            school_id = int(request.vars.id)
+        except ValueError:
+            return dict(error="Invalid school ID format")
+
+        db_now = db(db.m_sekolah.id == school_id)
+        if not db_now.select().first():
+            return dict(error="School not found")
+
+        db_now.delete()
+        return dict(res='ok', id_deleted=school_id)
+
+    return locals()
+
+#------------------------------------------------------------------------------------
+## untuk disdik
+#------------------------------------------------------------------------------------
 
 #disdik auth_user.id_user=3
 def get_disdik_id(t_id=None):
@@ -220,7 +275,6 @@ def disdik_kontrak():
 
         try:
             id_disdik = get_disdik_id(request.vars.id_user)
-            return dict(res=id_disdik)
         except ValueError as e:
             raise HTTP(400, str(e))
 
@@ -609,6 +663,16 @@ def get_vendor_id(t_id=None):
 
     return vendor_data.id_vendor  # Return the vendor ID as an integer
 
+def get_vendor(t_id=None):
+    # Fetch vendor data from the database\
+    id_vendor = get_vendor_id(t_id)
+    vendor_data = db((db.m_vendor.id == id_vendor)).select().first()
+    
+    if not vendor_data:
+        return "Vendor not found"  # Raise an error if vendor is not found
+
+    return vendor_data
+
 @request.restful()
 @cors_allow
 def cek_vendor():
@@ -763,7 +827,7 @@ def vendor_pesan_supplier():
             raise HTTP(400, f"Missing {', '.join(missing_vars)}")
         
         id_vendor = get_vendor_id(request.vars.id_user)
-
+        nama_vendor = (get_vendor(request.vars.id_user)).nama_vendor
         item = db((db.t_menu_supplier.nama_item == request.vars.nama_item)).select().first()
         
         if not item:
@@ -1065,6 +1129,29 @@ def pesanan_vendor():
         return dict(res='ok', id_deleted=request.vars.id_item)
         
     return locals()
+
+@request.restful()
+@cors_allow
+def kirim_bahan():
+    response.view = 'generic.json'
+    def PUT(*args, **vars):
+        required_vars = ['id_user', 'id_item']
+        missing_vars = [var for var in required_vars if not request.vars.get(var)]
+        if missing_vars:
+            raise HTTP(400, f"Missing {', '.join(missing_vars)}")
+        
+        id_supplier = get_supplier_id(request.vars.id_user)
+        db_now = db((db.t_pembelian_bahan.id == request.vars.id_item) & 
+                    (db.t_pembelian_bahan.id_supplier == id_supplier))
+        
+        if not db_now.select().first():
+            return dict(error="Item not found")
+        
+        db_now.update(status="Dikirim", time_stamp=request.now)
+        return dict(res='ok', id_update=request.vars.id_item)
+    
+    return locals()
+
 #------------------------------------------------------------------------------------
 ## untuk Watchdog
 #------------------------------------------------------------------------------------
